@@ -6,12 +6,13 @@
 
     <groupId>org.sunyaxing.imagine</groupId>
     <artifactId>JDataViewAgent</artifactId>
-    <version>1.0.0</version>
+    <version>${jdataview.version}</version>
 
     <properties>
         <java.version>17</java.version>
         <project.plugins.outputDir>/opt/JDataViewAgent/agent</project.plugins.outputDir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdataview.version>1.0.0</jdataview.version>
     </properties>
 
     <dependencies>
@@ -49,6 +50,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.36</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sunyaxing.imagine</groupId>
+            <artifactId>JDataViewApi</artifactId>
+            <version>${jdataview.version}</version>
         </dependency>
     </dependencies>
 

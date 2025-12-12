@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.sunyaxing.imagine</groupId>
     <artifactId>JDataView</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${jdataview.version}</version>
     <name>app</name>
     <description>app</description>
     <url/>
@@ -28,6 +28,8 @@
     </scm>
     <properties>
         <java.version>17</java.version>
+        <jdataview.version>1.0.0</jdataview.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>

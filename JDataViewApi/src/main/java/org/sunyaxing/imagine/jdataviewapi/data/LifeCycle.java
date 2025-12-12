@@ -1,4 +1,4 @@
-package org.sunyaxing.imagine.jdvagent.data;
+package org.sunyaxing.imagine.jdataviewapi.data;
 
 public class LifeCycle {
 

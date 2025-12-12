@@ -1,9 +1,11 @@
 package org.sunyaxing.imagine.jdvagent.advices;
 
+import com.alibaba.fastjson2.JSONObject;
 import net.bytebuddy.asm.Advice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sunyaxing.imagine.jdvagent.data.ThreadSpace;
+import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
+import org.sunyaxing.imagine.jdvagent.sender.JDataViewWebSocketClient;
 
 import java.lang.reflect.Method;
 
@@ -21,7 +23,7 @@ public class ProfilingAdvice {
             @Advice.Origin Method method,
             @Advice.AllArguments Object[] args) {
         final ThreadSpace threadSpace = new ThreadSpace(obj.getClass(), method);
-        threadSpace.print();
+        JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(threadSpace));
         return threadSpace;
     }
 
@@ -37,7 +39,7 @@ public class ProfilingAdvice {
             @Advice.Thrown Throwable throwable,
             @Advice.AllArguments Object[] args) {
         threadSpace.end(false);
-        threadSpace.print();
+        JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(threadSpace));
     }
 
 }

@@ -1,10 +1,8 @@
-package org.sunyaxing.imagine.jdvagent.data;
+package org.sunyaxing.imagine.jdataviewapi.data;
 
-import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sunyaxing.imagine.jdvagent.sender.JDataViewWebSocketClient;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -46,10 +44,4 @@ public class ThreadSpace implements Serializable {
         this.methodState = isException ? LifeCycle.MethodState.EXCEPTION : LifeCycle.MethodState.SUC;
     }
 
-    /**
-     * 输出
-     */
-    public void print() {
-        JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(this));
-    }
 }
