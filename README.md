@@ -5,7 +5,9 @@ JAVA 方法调用栈树形图可视化
 
 #### 软件架构
 软件架构说明
-
+1. [JDataViewAgent](JDataViewAgent) 用于采集数据,通过websocket将数据发送给[JDataViewServer](JDataViewServer)
+2. [JDataViewServer](JDataViewServer) 持久化数据，分析数据，提供可视化支撑
+3. [app](app) 测试程序，用于接入[JDataViewAgent](JDataViewAgent)
 
 #### 安装教程
 
