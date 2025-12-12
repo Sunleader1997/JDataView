@@ -11,15 +11,15 @@ JAVA 方法调用栈树形图可视化
 
 #### 安装教程
 
-1.  xxxx
+1.  Agent
 2.  xxxx
 3.  xxxx
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  [JDataViewAgent](JDataViewAgent) package 生成 Agent 包到 /opt/JDataViewAgent/agent/JDataViewAgent-1.0.0.jar
+2.  启动 [JDataViewServer](JDataViewServer) 开启监听端口
+3.  [app](app) 添加 VM OPTIONS: -javaagent:/opt/JDataViewAgent/agent/JDataViewAgent-1.0.0.jar 后启动
 
 #### 参与贡献
 

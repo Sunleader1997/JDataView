@@ -28,6 +28,7 @@ public class JDataViewWebSocketClient extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
         LOGGER.info(LogDicts.LOG_PREFIX + "连接已建立");
+        // TODO 心跳与重连
     }
 
     @Override
@@ -38,11 +39,12 @@ public class JDataViewWebSocketClient extends WebSocketClient {
     @Override
     public void onClose(int i, String s, boolean b) {
         LOGGER.info(LogDicts.LOG_PREFIX + "连接已关闭");
+        // TODO 卸载AGENT
     }
 
     @Override
     public void onError(Exception e) {
-        LOGGER.error(LogDicts.LOG_PREFIX + "连接异常", e);
+        LOGGER.error(LogDicts.LOG_PREFIX + "连接异常, {}", INSTANCE.getURI().toString());
     }
 
     @Override
