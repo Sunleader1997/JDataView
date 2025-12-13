@@ -1,6 +1,7 @@
-package org.sunyaxing.imagine.jdvagent.sender;
+package org.sunyaxing.imagine.jdvagent.sender.base;
 
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,8 @@ public class JDataViewWebSocketClient extends WebSocketClient {
     public static JDataViewWebSocketClient getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new JDataViewWebSocketClient(URI.create(DEFAULT_SERVER_URI));
+            INSTANCE.connect();
         }
-        INSTANCE.connect();
         return INSTANCE;
     }
 
@@ -52,6 +53,8 @@ public class JDataViewWebSocketClient extends WebSocketClient {
         try {
             LOGGER.info(LogDicts.LOG_PREFIX + "发送数据 {}", text);
             super.send(text);
+        } catch (WebsocketNotConnectedException unlink) {
+            LOGGER.error(LogDicts.LOG_PREFIX + "websocket 未连接 {}", INSTANCE.getURI().toString());
         } catch (Exception e) {
             LOGGER.error(LogDicts.LOG_PREFIX + "发送数据异常", e);
         }

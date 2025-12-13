@@ -7,7 +7,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sunyaxing.imagine.jdvagent.advices.ProfilingAdvice;
-import org.sunyaxing.imagine.jdvagent.sender.JDataViewWebSocketClient;
+import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 
 import java.lang.instrument.Instrumentation;
 
