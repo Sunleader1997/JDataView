@@ -7,8 +7,10 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sunyaxing.imagine.jdvagent.advices.ProfilingAdvice;
+import org.sunyaxing.imagine.jdvagent.dicts.LogDicts;
 import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 
+import java.lang.ProcessHandle;
 import java.lang.instrument.Instrumentation;
 
 public class JDataViewAgent {
@@ -27,7 +29,7 @@ public class JDataViewAgent {
         new AgentBuilder.Default()
                 .type(ElementMatchers.nameStartsWith("org.sunyaxing.imagine.jdataview"))
                 .transform((builder, typeDescription, classLoader, module) -> {
-                    LOGGER.info("【JDataViewAgent】 获取到类 " + typeDescription.getName());
+                    LOGGER.info(LogDicts.LOG_PREFIX + "获取到类 {}", typeDescription.getName());
                     DynamicType.Builder<?> dynamicType = builder
                             .method(ElementMatchers.any())
                             .intercept(Advice.to(ProfilingAdvice.class));

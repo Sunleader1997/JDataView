@@ -1,2 +1,21 @@
 server:
   port: 19876
+  servlet:
+    session:
+      timeout: 2h
+spring:
+  profiles:
+    include: db
+    active: dev
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: INFO
+    web: INFO
+    javax.activation: info
+    org.apache.catalina: INFO
+    org.apache.commons.beanutils.converters: INFO
+    org.apache.coyote.http11.Http11Processor: INFO
+    org.apache.http: INFO
+    org.apache.tomcat: INFO
+    org.springframework: INFO
