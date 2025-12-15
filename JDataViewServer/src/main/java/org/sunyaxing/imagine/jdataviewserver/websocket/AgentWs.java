@@ -2,7 +2,6 @@ package org.sunyaxing.imagine.jdataviewserver.websocket;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONReader;
 import com.alibaba.fastjson2.TypeReference;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
 import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
 import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
+import org.sunyaxing.imagine.jdataviewserver.service.AppService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,9 +32,11 @@ public class AgentWs {
     private static final ConcurrentHashMap<String, Session> SESSION_MAP = new ConcurrentHashMap<>();
 
     public AgentMsgService agentMsgService;
+    public AppService appService;
 
     public AgentWs() {
         this.agentMsgService = SpringUtil.getBean(AgentMsgService.class);
+        this.appService = SpringUtil.getBean(AppService.class);
     }
 
     @OnOpen
@@ -59,6 +61,9 @@ public class AgentWs {
         LOGGER.info("收到消息: {}", payload);
         JDataViewMsg<ThreadSpace> jDataViewMsg = JSONObject.parseObject(payload, new TypeReference<>() {
         });
-        agentMsgService.handleMsg(jDataViewMsg);
+        // 根据 agentMsg 创建应用
+        appService.insertByAgentMsg(jDataViewMsg);
+        // 存储消息
+        agentMsgService.saveBatch(AgentMsgService.parseMsg(jDataViewMsg));
     }
 }

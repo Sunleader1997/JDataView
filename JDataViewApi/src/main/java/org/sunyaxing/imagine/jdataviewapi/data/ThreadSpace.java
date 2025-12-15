@@ -16,7 +16,7 @@ public class ThreadSpace implements Serializable {
     // 线程相关
     private long threadId;
     private String threadName;
-    private AtomicLong stepIndex;
+    private long stepIndex;
     // 类与方法栈
     private String className;
     private String methodName;
@@ -30,7 +30,7 @@ public class ThreadSpace implements Serializable {
     public ThreadSpace(Class<?> aClass, Method method) {
         this.threadId = Thread.currentThread().getId();
         this.threadName = Thread.currentThread().getName();
-        this.stepIndex = new AtomicLong(0);
+        this.stepIndex = 0;
 
         this.className = aClass.getSimpleName();
         this.methodName = method.getName();

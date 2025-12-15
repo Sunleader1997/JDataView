@@ -14,7 +14,6 @@ import lombok.ToString;
 @TableName("APP")
 public class AppEntity {
     @TableField("id")
-    @TableId(value = "id", type = IdType.INPUT)
     private String id;
     @TableField("name")
     private String name;

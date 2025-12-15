@@ -17,7 +17,6 @@ import java.io.Serializable;
 @TableName("node")
 public class NodeEntity implements Serializable {
     @TableField("id")
-    @TableId(value = "id", type = IdType.INPUT)
     private String id;
 
     @TableField("jobId")

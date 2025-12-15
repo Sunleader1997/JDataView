@@ -19,7 +19,6 @@ import java.io.Serializable;
 @TableName("node_link")
 public class EdgeEntity implements Serializable {
     @TableField("id")
-    @TableId(value = "id", type = IdType.INPUT)
     private String id;
 
     @TableField("sourceId")
