@@ -1,11 +1,9 @@
 package org.sunyaxing.imagine.jdvagent.advices;
 
-import com.alibaba.fastjson2.JSONObject;
 import net.bytebuddy.asm.Advice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
-import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 import org.sunyaxing.imagine.jdvagent.sender.base.Sender;
 
 import java.lang.reflect.Method;
@@ -15,6 +13,7 @@ import java.lang.reflect.Method;
  */
 public class ProfilingAdvice {
     public static final Logger LOGGER = LoggerFactory.getLogger(ProfilingAdvice.class);
+
     /**
      * 方法进入时的埋点
      */

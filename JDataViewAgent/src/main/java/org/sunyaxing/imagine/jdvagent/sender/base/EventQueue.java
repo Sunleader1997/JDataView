@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class EventQueue {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventQueue.class);
 
-    private final BlockingDeque<Object> blockingDeque;
+    private final BlockingDeque<String> blockingDeque;
 
     public EventQueue() {
         // 默认仅缓存 1000 条数据
@@ -27,11 +27,11 @@ public class EventQueue {
      * 批量拉取数据
      * @return 批量数据
      */
-    public List<Object> pull() {
+    public List<String> pull() {
         try {
-            List<Object> dataList = new ArrayList<>();
+            List<String> dataList = new ArrayList<>();
             // 阻塞式取一条消息 在队列为空时会阻塞，直到队列中有元素可取
-            Object item = blockingDeque.take();
+            String item = blockingDeque.take();
             // 一次消费多条信息
             dataList.add(item);
             blockingDeque.drainTo(dataList, 999);
@@ -47,7 +47,7 @@ public class EventQueue {
      * [×] add(E element)：将指定元素插入队列，如果队列已满，则抛出异常。
      * [√] offer(E element)：将指定元素插入队列，如果队列已满，则返回 false
      */
-    public boolean put(Object data) {
+    public boolean put(String data) {
         // 为了不影响程序正常执行应该选择offer
         return blockingDeque.offer(data);
     }

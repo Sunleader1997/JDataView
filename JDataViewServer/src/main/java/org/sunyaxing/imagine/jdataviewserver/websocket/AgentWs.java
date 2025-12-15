@@ -59,8 +59,7 @@ public class AgentWs {
     @OnMessage
     public void onMessage(String payload, Session session) {
         LOGGER.info("收到消息: {}", payload);
-        JDataViewMsg<ThreadSpace> jDataViewMsg = JSONObject.parseObject(payload, new TypeReference<>() {
-        });
+        JDataViewMsg jDataViewMsg = JSONObject.parseObject(payload, JDataViewMsg.class);
         // 根据 agentMsg 创建应用
         appService.insertByAgentMsg(jDataViewMsg);
         // 存储消息

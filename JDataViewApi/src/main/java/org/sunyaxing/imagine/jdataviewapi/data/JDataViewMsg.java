@@ -14,11 +14,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JDataViewMsg<T> {
+public class JDataViewMsg {
     // 应用名称
     private String appName;
     private long pid;
 
     // 业务数据
-    private List<T> content;
+    private List<String> content;
 }

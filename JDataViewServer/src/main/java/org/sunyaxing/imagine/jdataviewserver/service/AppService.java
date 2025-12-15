@@ -16,7 +16,7 @@ public class AppService extends ServiceImpl<AppRepository, AppEntity> {
      *
      * @param jDataViewMsg
      */
-    public void insertByAgentMsg(JDataViewMsg<?> jDataViewMsg) {
+    public void insertByAgentMsg(JDataViewMsg jDataViewMsg) {
         // app 是否存在
         boolean appExists = this.lambdaQuery()
                 .eq(AppEntity::getName, jDataViewMsg.getAppName())

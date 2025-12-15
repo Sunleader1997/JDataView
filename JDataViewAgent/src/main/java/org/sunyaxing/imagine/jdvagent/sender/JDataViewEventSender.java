@@ -34,13 +34,13 @@ public class JDataViewEventSender implements Sender, Runnable {
 
     @Override
     public void send(Object message) {
-        this.eventQueue.put(message);
+        this.eventQueue.put(JSONObject.toJSONString(message));
     }
 
     @Override
     public void run() {
         while (!Thread.interrupted()) {
-            List<Object> res = this.eventQueue.pull();
+            List<String> res = this.eventQueue.pull();
             // 发送服务信息
             JDataViewMsg appMsg = JDataViewMsg.builder()
                     .appName(APP_NAME)

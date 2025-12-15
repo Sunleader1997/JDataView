@@ -16,7 +16,7 @@ create table AGENT_MSG
         primary key (ID)                          -- 结束时间可能为空（如果方法还在执行）
 );
 create index AGENT_MSG_FOR_SELECT
-    on AGENT_MSG (APP_NAME, THREAD_ID, CLASS_NAME, METHOD_NAME);
+    on AGENT_MSG (APP_NAME, THREAD_ID, CLASS_NAME, METHOD_NAME, METHOD_START_TIME);
 
 
 -- 项目列表
