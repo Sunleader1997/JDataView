@@ -16,12 +16,20 @@ const nodes = ref([
   {
     id: '1',
     type: 'special',
-    position: {x: 250, y: 5},
+    position: {x: 256, y: 0},
     data: {
       label: 'TestController.class',
       description: 'by SunYaxing',
       handles: [
-        "String demo(String name)"
+        {
+          id: "m1",
+          returnType: "String",
+          methodName: "demo",
+          parameters: [
+            "String demo1"
+          ],
+          cost: 90
+        }
       ]
     },
   },
@@ -30,38 +38,60 @@ const nodes = ref([
   {
     id: '2',
     type: 'special',
-    position: {x: 100, y: 100},
+    position: {x: 640, y: 0},
     data: {
       label: 'TestService.class',
       description: 'by SunYaxing',
       handles: [
-        "String test(String demo1)",
-        "String test2(String demo1)"
+        {
+          id: "m1",
+          returnType: "String",
+          methodName: "test",
+          parameters: [
+            "String demo1"
+          ],
+          cost: 20
+        },
+        {
+          id: "m2",
+          returnType: "String",
+          methodName: "test2",
+          parameters: [
+            "String demo1"
+          ],
+          cost: 20
+        },
       ]
     },
-  },
-
-  // An output node, specified by using `type: 'output'`
-  {
-    id: '3',
-    type: 'output',
-    position: {x: 400, y: 200},
-    data: {label: 'Node 3'},
   },
 
   // this is a custom node
   // we set it by using a custom type name we choose, in this example `special`
   // the name can be freely chosen, there are no restrictions as long as it's a string
   {
-    id: '4',
+    id: '3',
     type: 'special', // <-- this is the custom node type name
     position: {x: 400, y: 200},
     data: {
       label: 'JDataViewServerApplication.class',
       description: 'by SunYaxing',
       handles: [
-        "void org.sunyaxing.imagine.jdataview.TestService()",
-        "class java.lang.String test(java.lang.String demo1)",
+        {
+          id: "m1",
+          returnType: "void",
+          methodName: "TestService",
+          parameters: [],
+          cost: 20
+        },
+        {
+          id: "m2",
+          returnType: "class",
+          methodName: "test",
+          parameters: [
+            "String demo1"
+          ],
+          cost: 120
+        },
       ]
     },
   },
