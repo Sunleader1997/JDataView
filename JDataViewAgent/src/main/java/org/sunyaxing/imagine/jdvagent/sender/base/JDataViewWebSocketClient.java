@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.sunyaxing.imagine.jdvagent.dicts.LogDicts;
 
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 负责将数据推送到 SERVER
@@ -17,6 +18,7 @@ public class JDataViewWebSocketClient extends WebSocketClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(JDataViewWebSocketClient.class);
     public static final String DEFAULT_SERVER_URI = "ws://127.0.0.1:19876/agent";
     public static JDataViewWebSocketClient INSTANCE;
+    public static final AtomicBoolean isConnected = new AtomicBoolean(false);
 
     public static JDataViewWebSocketClient getInstance() {
         if (INSTANCE == null) {
@@ -32,6 +34,7 @@ public class JDataViewWebSocketClient extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
+        isConnected.set(true);
         LOGGER.info(LogDicts.LOG_PREFIX + "连接已建立");
         // TODO 心跳与重连
     }
@@ -43,11 +46,13 @@ public class JDataViewWebSocketClient extends WebSocketClient {
 
     @Override
     public void onClose(int i, String s, boolean b) {
+        isConnected.set(false);
         LOGGER.info(LogDicts.LOG_PREFIX + "连接已关闭");
     }
 
     @Override
     public void onError(Exception e) {
+        isConnected.set(false);
         LOGGER.error(LogDicts.LOG_PREFIX + "连接异常, {}", INSTANCE.getURI().toString());
     }
 
@@ -61,5 +66,9 @@ public class JDataViewWebSocketClient extends WebSocketClient {
         } catch (Exception e) {
             LOGGER.error(LogDicts.LOG_PREFIX + "发送数据异常", e);
         }
+    }
+
+    public static boolean isConnected() {
+        return isConnected.get();
     }
 }

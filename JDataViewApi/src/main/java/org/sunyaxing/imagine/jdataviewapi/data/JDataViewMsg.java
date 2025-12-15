@@ -1,9 +1,6 @@
 package org.sunyaxing.imagine.jdataviewapi.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -18,7 +15,16 @@ public class JDataViewMsg {
     // 应用名称
     private String appName;
     private long pid;
-
+    private MsgType msgType;
     // 业务数据
     private List<String> content;
+
+    @Getter
+    @AllArgsConstructor
+    public enum MsgType {
+        MethodCall("方法执行"),
+        ClassRegister("类注册"),
+        ;
+        private final String description;
+    }
 }

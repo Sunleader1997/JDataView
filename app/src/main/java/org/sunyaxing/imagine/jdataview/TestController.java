@@ -16,7 +16,7 @@ public class TestController {
 
     @GetMapping("/demo")
     public String demo(@RequestParam String name) {
-        testService.test();
+        testService.test(name);
         return testService2.test();
     }
 }

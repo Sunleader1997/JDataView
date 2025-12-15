@@ -2,7 +2,6 @@ package org.sunyaxing.imagine.jdataviewserver.websocket;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.TypeReference;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
@@ -14,9 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
-import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
 import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
 import org.sunyaxing.imagine.jdataviewserver.service.AppService;
+import org.sunyaxing.imagine.jdataviewserver.service.NodeService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,10 +32,12 @@ public class AgentWs {
 
     public AgentMsgService agentMsgService;
     public AppService appService;
+    private NodeService nodeService;
 
     public AgentWs() {
         this.agentMsgService = SpringUtil.getBean(AgentMsgService.class);
         this.appService = SpringUtil.getBean(AppService.class);
+        this.nodeService = SpringUtil.getBean(NodeService.class);
     }
 
     @OnOpen
@@ -62,7 +63,17 @@ public class AgentWs {
         JDataViewMsg jDataViewMsg = JSONObject.parseObject(payload, JDataViewMsg.class);
         // 根据 agentMsg 创建应用
         appService.insertByAgentMsg(jDataViewMsg);
-        // 存储消息
-        agentMsgService.saveBatch(AgentMsgService.parseMsg(jDataViewMsg));
+        switch (jDataViewMsg.getMsgType()) {
+            case ClassRegister -> {
+                // 创建 node 节点
+                nodeService.saveBatch(NodeService.parseClassRegistryMsg(jDataViewMsg));
+            }
+            case MethodCall -> {
+                // 记录方法调用
+                agentMsgService.saveBatch(AgentMsgService.parseMsg(jDataViewMsg));
+            }
+            default -> {
+            }
+        }
     }
 }

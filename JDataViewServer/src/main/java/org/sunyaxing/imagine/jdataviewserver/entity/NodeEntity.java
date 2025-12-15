@@ -19,20 +19,11 @@ public class NodeEntity implements Serializable {
     @TableField("id")
     private String id;
 
-    @TableField("jobId")
-    private String jobId;
-
     @TableField("name")
     private String name;
 
     @TableField("nodeType")
     private String nodeType;
-
-    @TableField("pluginId")
-    private String pluginId;
-
-    @TableField("config")
-    private String config;
 
     @TableField("X")
     private Integer x;
@@ -46,15 +37,6 @@ public class NodeEntity implements Serializable {
     @TableField(value = "height", updateStrategy = FieldStrategy.ALWAYS)
     private Integer height;
 
-    @TableField(value = "parentNode", updateStrategy = FieldStrategy.ALWAYS)
-    private String parentNode;
-
-    @TableField(value = "extent", updateStrategy = FieldStrategy.ALWAYS)
-    private String extent;
-
     @TableField("handles")
     private String handles;
-
-    @TableField("tags")
-    private String tags;
 }
