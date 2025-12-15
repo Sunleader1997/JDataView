@@ -42,6 +42,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.sunyaxing.imagine</groupId>
+            <artifactId>JDataViewApi</artifactId>
+            <version>${jdataview.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>

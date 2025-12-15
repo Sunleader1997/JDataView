@@ -3,6 +3,7 @@ package org.sunyaxing.imagine.jdvagent.sender;
 import com.alibaba.fastjson2.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
 import org.sunyaxing.imagine.jdvagent.dicts.LogDicts;
 import org.sunyaxing.imagine.jdvagent.sender.base.EventQueue;
 import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
@@ -22,6 +23,8 @@ public class JDataViewEventSender implements Sender, Runnable {
 
     private final EventQueue eventQueue;
     private final ExecutorService executor;
+    public static final long PID = ProcessHandle.current().pid();
+    public static final String APP_NAME = System.getProperty("sun.java.command");
 
     public JDataViewEventSender() {
         this.eventQueue = new EventQueue();
@@ -38,7 +41,13 @@ public class JDataViewEventSender implements Sender, Runnable {
     public void run() {
         while (!Thread.interrupted()) {
             List<Object> res = this.eventQueue.pull();
-            JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(res));
+            // 发送服务信息
+            JDataViewMsg appMsg = JDataViewMsg.builder()
+                    .appName(APP_NAME)
+                    .pid(PID)
+                    .content(res)
+                    .build();
+            JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
         }
     }
 

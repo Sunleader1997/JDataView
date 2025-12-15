@@ -1,6 +1,7 @@
 package org.sunyaxing.imagine.jdataviewapi.data;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,17 +10,18 @@ import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Data
+@NoArgsConstructor
 public class ThreadSpace implements Serializable {
     public static final Logger LOGGER = LoggerFactory.getLogger(ThreadSpace.class);
     // 线程相关
-    private final long threadId;
-    private final String threadName;
-    private final AtomicLong stepIndex;
+    private long threadId;
+    private String threadName;
+    private AtomicLong stepIndex;
     // 类与方法栈
-    private final Class<?> aClass;
-    private final Method method;
+    private String className;
+    private String methodName;
     // 方法调用的开始时间
-    private final long methodStartTime;
+    private long methodStartTime;
     // 当前方法的状态
     private LifeCycle.MethodState methodState;
     // 方法调用的结束时间
@@ -30,8 +32,8 @@ public class ThreadSpace implements Serializable {
         this.threadName = Thread.currentThread().getName();
         this.stepIndex = new AtomicLong(0);
 
-        this.aClass = aClass;
-        this.method = method;
+        this.className = aClass.getSimpleName();
+        this.methodName = method.getName();
         this.methodStartTime = System.currentTimeMillis();
         this.methodState = LifeCycle.MethodState.ENTER;
     }

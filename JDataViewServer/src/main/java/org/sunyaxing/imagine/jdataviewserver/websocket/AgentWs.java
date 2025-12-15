@@ -1,5 +1,9 @@
 package org.sunyaxing.imagine.jdataviewserver.websocket;
 
+import cn.hutool.extra.spring.SpringUtil;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONReader;
+import com.alibaba.fastjson2.TypeReference;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
@@ -9,9 +13,10 @@ import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.sunyaxing.imagine.jdataviewserver.service.AppService;
+import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
+import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
+import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,10 +31,10 @@ public class AgentWs {
     // 保存所有连接的会话
     private static final ConcurrentHashMap<String, Session> SESSION_MAP = new ConcurrentHashMap<>();
 
-    public AppService appService;
+    public AgentMsgService agentMsgService;
 
-    public AgentWs(AppService appService) {
-        this.appService = appService;
+    public AgentWs() {
+        this.agentMsgService = SpringUtil.getBean(AgentMsgService.class);
     }
 
     @OnOpen
@@ -52,7 +57,8 @@ public class AgentWs {
     @OnMessage
     public void onMessage(String payload, Session session) {
         LOGGER.info("收到消息: {}", payload);
-        // TODO 接收的消息分类处理， 接收到创建应用的消息, 调用 appService 创建应用
+        JDataViewMsg<ThreadSpace> jDataViewMsg = JSONObject.parseObject(payload, new TypeReference<>() {
+        });
+        agentMsgService.handleMsg(jDataViewMsg);
     }
-
 }

@@ -10,7 +10,6 @@ import org.sunyaxing.imagine.jdvagent.advices.ProfilingAdvice;
 import org.sunyaxing.imagine.jdvagent.dicts.LogDicts;
 import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 
-import java.lang.ProcessHandle;
 import java.lang.instrument.Instrumentation;
 
 public class JDataViewAgent {
@@ -27,7 +26,12 @@ public class JDataViewAgent {
 
     public static void install(Instrumentation instrumentation) {
         new AgentBuilder.Default()
-                .type(ElementMatchers.nameStartsWith("org.sunyaxing.imagine.jdataview"))
+                .type(ElementMatchers
+                        .nameStartsWith("org.sunyaxing.imagine.jdataview")
+                        .and(ElementMatchers.not(
+                                ElementMatchers.nameStartsWith("org.sunyaxing.imagine.jdataviewapi")
+                        ))
+                )
                 .transform((builder, typeDescription, classLoader, module) -> {
                     LOGGER.info(LogDicts.LOG_PREFIX + "获取到类 {}", typeDescription.getName());
                     DynamicType.Builder<?> dynamicType = builder
@@ -36,6 +40,7 @@ public class JDataViewAgent {
                     return dynamicType;
                 }).installOn(instrumentation);
     }
+
     public static void createClient(String agentArgs) {
         // TODO 根据参数初始化CLIENT
         JDataViewWebSocketClient.getInstance();

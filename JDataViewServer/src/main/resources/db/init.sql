@@ -1,8 +1,8 @@
 -- AGENT 投递的消息内容
 create table AGENT_MSG
 (
-    ID        CHARACTER VARYING not null,
-    APID CHARACTER VARYING not null,
+    ID      CHARACTER VARYING not null,
+    APPNAME CHARACTER VARYING not null,
 );
 
 -- 项目列表
