@@ -13,10 +13,13 @@ public class TestController {
     private TestService testService;
     @Autowired
     private TestService2 testService2;
+    @Autowired
+    private AsyncService asyncService;
 
     @GetMapping("/demo")
     public String demo(@RequestParam String name) {
         testService.test(name);
+        asyncService.async();
         return testService2.test();
     }
 }
