@@ -1,5 +1,6 @@
 package org.sunyaxing.imagine.jdataviewserver.controller;
 
+import cn.hutool.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +21,14 @@ public class DemoController {
     public Result<Map<Long, List<AgentMsgService.MethodCall>>> getRes() {
         Map<Long, List<AgentMsgService.MethodCall>> res = agentMsgService.generateBy("org.sunyaxing.imagine.jdataview.AppApplication");
         return Result.success(res);
+    }
+
+    /**
+     * 获取接口调用树
+     * 仅加载一级调用
+     */
+    @GetMapping("/getFunctionTree")
+    public Result<JSONObject> getFunctionTree() {
+        return null;
     }
 }

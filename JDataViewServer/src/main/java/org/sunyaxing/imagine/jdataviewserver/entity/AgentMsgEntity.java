@@ -25,6 +25,8 @@ public class AgentMsgEntity implements Serializable{
     private long threadId;
     private String threadName;
     private Long stepIndex;
+    // 调用深度
+    private long depth;
     // 类与方法栈
     private String className;
     private String methodName;

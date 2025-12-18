@@ -23,6 +23,7 @@ public class ProfilingAdvice {
             @Advice.Origin Method method,
             @Advice.AllArguments Object[] args) {
         final ThreadSpace threadSpace = new ThreadSpace(obj.getClass(), method);
+        threadSpace.setDepth(Counter.enter());
         Sender.INSTANCE.send(threadSpace);
         return threadSpace;
     }
@@ -39,6 +40,7 @@ public class ProfilingAdvice {
             @Advice.Thrown Throwable throwable,
             @Advice.AllArguments Object[] args) {
         threadSpace.end(false);
+        threadSpace.setDepth(Counter.end());
         Sender.INSTANCE.send(threadSpace);
     }
 

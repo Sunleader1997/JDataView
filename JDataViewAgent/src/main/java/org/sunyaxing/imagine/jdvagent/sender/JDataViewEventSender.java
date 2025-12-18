@@ -11,10 +11,6 @@ import org.sunyaxing.imagine.jdvagent.sender.base.EventQueue;
 import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 import org.sunyaxing.imagine.jdvagent.sender.base.Sender;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * 发送器
  * 数据优先送往队列
@@ -25,16 +21,30 @@ public class JDataViewEventSender implements Sender {
 
     private final EventQueue eventQueue;
     private final EventQueue registryQueue;
-    private final ExecutorService executor;
     public static final long PID = ProcessHandle.current().pid();
     public static final String APP_NAME = System.getProperty("sun.java.command");
 
     public JDataViewEventSender() {
-        this.eventQueue = new EventQueue();
-        this.registryQueue = new EventQueue();
-        this.executor = Executors.newFixedThreadPool(2);
-        executeThreadSpace();
-        executeClassRegistryMsg();
+        this.eventQueue = new EventQueue(res -> {
+            // 发送服务信息
+            JDataViewMsg appMsg = JDataViewMsg.builder()
+                    .appName(APP_NAME)
+                    .pid(PID)
+                    .msgType(JDataViewMsg.MsgType.MethodCall)
+                    .content(res)
+                    .build();
+            JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
+        });
+        this.registryQueue = new EventQueue(res -> {
+            // 发送服务信息
+            JDataViewMsg appMsg = JDataViewMsg.builder()
+                    .appName(APP_NAME)
+                    .pid(PID)
+                    .msgType(JDataViewMsg.MsgType.ClassRegister)
+                    .content(res)
+                    .build();
+            JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
+        });
     }
 
     @Override
@@ -49,50 +59,9 @@ public class JDataViewEventSender implements Sender {
         }
     }
 
-    // 消费event数据
-    public void executeThreadSpace() {
-        this.executor.submit(() -> {
-            while (!Thread.interrupted()) {
-                List<String> res = this.eventQueue.pull();
-                if (!res.isEmpty()) {
-                    // 发送服务信息
-                    JDataViewMsg appMsg = JDataViewMsg.builder()
-                            .appName(APP_NAME)
-                            .pid(PID)
-                            .msgType(JDataViewMsg.MsgType.MethodCall)
-                            .content(res)
-                            .build();
-                    JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
-                }
-            }
-        });
-    }
-
-    // 消费regist数据
-    public void executeClassRegistryMsg() {
-        this.executor.submit(() -> {
-            while (!Thread.interrupted()) {
-                List<String> res = this.registryQueue.pull();
-                if (!res.isEmpty()) {
-                    // 发送服务信息
-                    JDataViewMsg appMsg = JDataViewMsg.builder()
-                            .appName(APP_NAME)
-                            .pid(PID)
-                            .msgType(JDataViewMsg.MsgType.ClassRegister)
-                            .content(res)
-                            .build();
-                    JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
-                }
-            }
-        });
-    }
-
     @Override
     public void close() {
-        try {
-            this.executor.shutdownNow();
-        } catch (Exception e) {
-            LOGGER.warn(LogDicts.LOG_PREFIX + "close error", e);
-        }
+        this.eventQueue.destroy();
+        this.registryQueue.destroy();
     }
 }

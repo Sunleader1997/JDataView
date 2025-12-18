@@ -26,6 +26,8 @@ public class ThreadSpace implements Serializable {
     private LifeCycle.MethodState methodState;
     // 方法调用的结束时间
     private long methodEndTime;
+    // 方法调用深度
+    private long depth;
 
     public ThreadSpace(Class<?> aClass, Method method) {
         this.threadId = Thread.currentThread().getId();
@@ -45,5 +47,4 @@ public class ThreadSpace implements Serializable {
         this.methodEndTime = System.currentTimeMillis();
         this.methodState = isException ? LifeCycle.MethodState.EXCEPTION : LifeCycle.MethodState.SUC;
     }
-
 }

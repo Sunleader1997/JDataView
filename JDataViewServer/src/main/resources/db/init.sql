@@ -7,6 +7,7 @@ create table AGENT_MSG
     THREAD_ID         BIGINT            NOT NULL,
     THREAD_NAME       VARCHAR(255),               -- 线程名通常不会太长，VARCHAR(255) 足够
     STEP_INDEX        BIGINT DEFAULT 0,           -- ATOMICLONG 通常表示计数，用 BIGINT 存储其值，这里假设初始值为 0
+    DEPTH             BIGINT DEFAULT 0,           -- 深度，用 BIGINT 存储其值，初始值为 0
     CLASS_NAME        VARCHAR(500),               -- 类名可能较长，可根据实际情况调整长度
     METHOD_NAME       VARCHAR(500),               -- 方法名可能较长，可根据实际情况调整长度
     METHOD_START_TIME BIGINT            NOT NULL, -- 时间戳通常用 BIGINT 存储

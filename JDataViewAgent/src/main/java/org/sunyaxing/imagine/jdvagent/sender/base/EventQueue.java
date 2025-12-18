@@ -3,28 +3,43 @@ package org.sunyaxing.imagine.jdvagent.sender.base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.Destroyable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.function.Consumer;
 
 /**
  * client 将待发送的数据批量发送
  * 批量数据取自于 eventQueue
  */
-public class EventQueue {
+public class EventQueue implements Destroyable {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventQueue.class);
 
     private final BlockingDeque<String> blockingDeque;
+    private final ExecutorService executor;
 
-    public EventQueue() {
+    public EventQueue(Consumer<List<String>> consumer) {
         // 默认仅缓存 1000 条数据
         this.blockingDeque = new LinkedBlockingDeque<>(1000);
+        this.executor = Executors.newSingleThreadExecutor();
+        this.executor.submit(() -> {
+            while (!Thread.interrupted()) {
+                List<String> res = this.pull();
+                if (!res.isEmpty()) {
+                    consumer.accept(res);
+                }
+            }
+        });
     }
 
     /**
      * 批量拉取数据
+     *
      * @return 批量数据
      */
     public List<String> pull() {
@@ -50,5 +65,10 @@ public class EventQueue {
     public boolean put(String data) {
         // 为了不影响程序正常执行应该选择offer
         return blockingDeque.offer(data);
+    }
+
+    @Override
+    public void destroy() {
+        this.executor.shutdownNow();
     }
 }
