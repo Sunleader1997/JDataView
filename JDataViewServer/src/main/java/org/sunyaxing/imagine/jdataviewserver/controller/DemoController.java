@@ -17,7 +17,7 @@ public class DemoController {
 
     @GetMapping("/getRes")
     public Result<Map<Long, AgentMsgService.MethodCall>> getRes() {
-        Map<Long, AgentMsgService.MethodCall> res = agentMsgService.generateBy("org.sunyaxing.imagine.jdataview.AppApplication");
+        Map<Long, AgentMsgService.MethodCall> res = agentMsgService.generateBy("","org.sunyaxing.imagine.jdataview.AppApplication");
         return Result.success(res);
     }
 }

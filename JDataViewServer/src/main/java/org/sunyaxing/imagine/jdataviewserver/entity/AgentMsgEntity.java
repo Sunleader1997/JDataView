@@ -34,4 +34,19 @@ public class AgentMsgEntity implements Serializable {
     private LifeCycle.MethodState methodState;
     // 方法调用的结束时间
     private long methodEndTime;
+
+    // 辅助方法：判断消息是否代表方法开始
+    // 这个方法需要根据您的 LifeCycle.MethodState 枚举来实现
+    public boolean isMethodStart() {
+        return LifeCycle.MethodState.ENTER.equals(getMethodState());
+    }
+
+    // 辅助方法：判断消息是否代表方法结束
+    // 这个方法需要根据您的 LifeCycle.MethodState 枚举来实现
+    public boolean isMethodEnd() {
+        return LifeCycle.MethodState.SUC.equals(getMethodState());
+    }
+    public long generateCost() {
+        return getMethodEndTime() - getMethodStartTime();
+    }
 }

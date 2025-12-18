@@ -1,5 +1,6 @@
 package org.sunyaxing.imagine.jdataviewserver.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,16 +10,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
-import org.sunyaxing.imagine.jdataviewapi.data.LifeCycle;
 import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
 import org.sunyaxing.imagine.jdataviewserver.entity.AgentMsgEntity;
 import org.sunyaxing.imagine.jdataviewserver.entity.cover.EntityCover;
 import org.sunyaxing.imagine.jdataviewserver.service.repository.AgentMsgRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,8 +35,10 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
 
     /**
      * 获取 APP 所有的链路
+     *
+     * @param rootId TODO 将此节点作为根节点
      */
-    public Map<Long, MethodCall> generateBy(String appName) {
+    public Map<Long, MethodCall> generateBy(String rootId, String appName) {
         // 获取日志, 根据ID进行排序可以保证方法执行的先后顺序
         List<AgentMsgEntity> agentMsgEntities = this.lambdaQuery()
                 .eq(AgentMsgEntity::getAppName, appName)
@@ -64,27 +63,43 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
 
     /**
      * 为单个线程的消息列表构建调用堆栈
+     * TODO 如何将堆栈深度控制在一定范围内？
      *
      * @param messages 属于同一个线程的消息列表，已按ID排序
      * @return 构建好的方法调用堆栈列表
      */
     private MethodCall buildCallStack(List<AgentMsgEntity> messages) {
-        MethodCall root = new MethodCall();
-        // 找到根节点 depth 0 && state ENTER
+        if (CollectionUtil.isEmpty(messages)) return null;
+        // 用栈来维护当前的调用链
+        Deque<MethodCall> callStack = new ArrayDeque<>();
         // 正常来说第一个数据就是根节点，如果不是说明数据有问题
+        Iterator<AgentMsgEntity> iterator = messages.iterator();
+        AgentMsgEntity firstMessage = iterator.next();
+        MethodCall root = MethodCall.buildRoot(firstMessage);
+        callStack.push(root);
+        while (iterator.hasNext()) {
+            // 如果栈已经排空了，说明后面的数据不属于该根节点堆栈
+            if (callStack.isEmpty()) {
+                return root;
+            }
+            AgentMsgEntity next = iterator.next();
+            switch (next.getMethodState()) {
+                case ENTER -> {
+                    MethodCall childStartMethod = MethodCall.buildRoot(next);
+                    // 获取栈顶元素（不移除）
+                    callStack.peek().addChild(childStartMethod);
+                    callStack.push(childStartMethod);
+                }
+                case SUC, EXCEPTION -> {
+                    // 栈弹出
+                    MethodCall currentCall = callStack.pop();
+                    // 设置结束时间
+                    currentCall.setEndTime(next.getMethodEndTime());
+                    currentCall.setCost(next.generateCost());
+                }
+            }
+        }
         return root;
-    }
-
-    // 辅助方法：判断消息是否代表方法开始
-    // 这个方法需要根据您的 LifeCycle.MethodState 枚举来实现
-    private boolean isMethodStart(AgentMsgEntity msg) {
-        return LifeCycle.MethodState.ENTER.equals(msg.getMethodState());
-    }
-
-    // 辅助方法：判断消息是否代表方法结束
-    // 这个方法需要根据您的 LifeCycle.MethodState 枚举来实现
-    private boolean isMethodEnd(AgentMsgEntity msg) {
-        return LifeCycle.MethodState.SUC.equals(msg.getMethodState());
     }
 
     // 内部类：表示一次方法调用及其子调用
@@ -97,6 +112,22 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
         private String methodName;
         private long startTime;
         private long endTime = -1; // 默认值表示未结束
+        private long cost = -1;
         private List<MethodCall> children = new ArrayList<>();
+
+        public static MethodCall buildRoot(AgentMsgEntity agentMsgEntity) {
+            if (!agentMsgEntity.isMethodStart()) throw new RuntimeException("当前节点非ENTER节点");
+            return MethodCall.builder()
+                    .className(agentMsgEntity.getClassName())
+                    .methodName(agentMsgEntity.getMethodName())
+                    .startTime(agentMsgEntity.getMethodStartTime())
+                    .children(new ArrayList<>())
+                    .build();
+        }
+
+
+        public void addChild(MethodCall nextRoot) {
+            this.children.add(nextRoot);
+        }
     }
 }
