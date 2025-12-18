@@ -1,7 +1,6 @@
 package org.sunyaxing.imagine.jdataviewserver.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
@@ -10,13 +9,12 @@ import lombok.ToString;
 import org.sunyaxing.imagine.jdataviewapi.data.LifeCycle;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Builder
 @Data
 @ToString
 @TableName("AGENT_MSG")
-public class AgentMsgEntity implements Serializable{
+public class AgentMsgEntity implements Serializable {
     @TableId(value = "id", type = IdType.INPUT)
     private String id;
     private String appName;
