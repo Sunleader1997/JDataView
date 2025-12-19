@@ -18,35 +18,3 @@ create table AGENT_MSG
 );
 create index AGENT_MSG_FOR_SELECT
     on AGENT_MSG (APP_NAME, THREAD_ID, CLASS_NAME, METHOD_NAME, METHOD_START_TIME);
-
-
-
--- 转成的节点信息
-create table NODE
-(
-    ID         CHARACTER VARYING           not null,
-    NAME       CHARACTER VARYING           not null,
-    NODETYPE   CHARACTER VARYING           not null,
-    X          INTEGER           default 0 not null,
-    Y          INTEGER           default 0 not null,
-    PARENTNODE CHARACTER VARYING,
-    EXTENT     CHARACTER VARYING,
-    WIDTH      INTEGER,
-    HEIGHT     INTEGER,
-    HANDLES    CHARACTER VARYING default '[]',
-    constraint NODE_PK
-        primary key (ID)
-);
-
--- 连线
-create table EDGE
-(
-    ID           CHARACTER VARYING not null,
-    SOURCEID     CHARACTER VARYING not null,
-    TARGETID     CHARACTER VARYING not null,
-    SOURCEHANDLE CHARACTER VARYING,
-    TARGETHANDLE CHARACTER VARYING,
-    constraint NODE_LINK_PK
-        primary key (ID)
-);
-

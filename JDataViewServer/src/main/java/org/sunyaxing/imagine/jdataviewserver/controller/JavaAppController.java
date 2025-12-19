@@ -47,4 +47,10 @@ public class JavaAppController {
         List<AgentMsgService.MethodCall> res = agentMsgService.generateBy(getMethodTreeDto.getAppName(), getMethodTreeDto.getThreadId());
         return Result.success(res);
     }
+
+    @PostMapping("/clearAppMsg")
+    public Result<Boolean> clearAppMsg(@RequestBody JavaAppDto javaAppDto) {
+        agentMsgService.clearBy(javaAppDto.getAppName());
+        return Result.success(true);
+    }
 }

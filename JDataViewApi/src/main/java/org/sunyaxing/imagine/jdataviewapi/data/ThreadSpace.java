@@ -14,27 +14,27 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ThreadSpace implements Serializable {
     public static final Logger LOGGER = LoggerFactory.getLogger(ThreadSpace.class);
     // 线程相关
-    private long threadId;
+    private Long threadId;
     private String threadName;
-    private long stepIndex;
+    private Long stepIndex;
     // 类与方法栈
     private String className;
     private String methodName;
     // 方法调用的开始时间
-    private long methodStartTime;
+    private Long methodStartTime;
     // 当前方法的状态
     private LifeCycle.MethodState methodState;
     // 方法调用的结束时间
-    private long methodEndTime;
+    private Long methodEndTime;
     // 方法调用深度
-    private long depth;
+    private Long depth;
 
     public ThreadSpace(Class<?> aClass, Method method) {
         this.threadId = Thread.currentThread().getId();
         this.threadName = Thread.currentThread().getName();
-        this.stepIndex = 0;
+        this.stepIndex = 0L;
 
-        this.className = aClass.getSimpleName();
+        this.className = aClass.getName();
         this.methodName = method.getName();
         this.methodStartTime = System.currentTimeMillis();
         this.methodState = LifeCycle.MethodState.ENTER;

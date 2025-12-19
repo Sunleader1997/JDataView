@@ -7,6 +7,7 @@
           <q-breadcrumbs-el label="JavaApp" icon="widgets" to="/applications"/>
           <q-breadcrumbs-el :label="`PID(`+appStore.currentApp?.pid+`)`" icon="format_list_numbered" to="/applications/threads"/>
         </q-breadcrumbs>
+        <q-space />
       </q-bar>
     </q-header>
 

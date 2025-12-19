@@ -69,6 +69,14 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
         List<MethodCall> methodCall = buildCallStack(agentMsgEntities); // 调用辅助方法
         return methodCall; // 返回所有线程的堆栈集合
     }
+    /**
+     * 清空应用记录
+     */
+    public void clearBy(String appName) {
+        this.lambdaUpdate()
+                .eq(AgentMsgEntity::getAppName, appName)
+                .remove();
+    }
 
     /**
      * 为单个线程的消息列表构建调用堆栈

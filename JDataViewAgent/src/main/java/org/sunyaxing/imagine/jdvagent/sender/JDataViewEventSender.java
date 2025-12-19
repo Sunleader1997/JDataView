@@ -1,5 +1,6 @@
 package org.sunyaxing.imagine.jdvagent.sender;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,6 @@ public class JDataViewEventSender implements Sender {
     private static final Logger LOGGER = LoggerFactory.getLogger(JDataViewEventSender.class);
 
     private final EventQueue eventQueue;
-    private final EventQueue registryQueue;
     public static final long PID = ProcessHandle.current().pid();
     public static final String APP_NAME = System.getProperty("sun.java.command");
 
@@ -35,33 +35,16 @@ public class JDataViewEventSender implements Sender {
                     .build();
             JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
         });
-        this.registryQueue = new EventQueue(res -> {
-            // 发送服务信息
-            JDataViewMsg appMsg = JDataViewMsg.builder()
-                    .appName(APP_NAME)
-                    .pid(PID)
-                    .msgType(JDataViewMsg.MsgType.ClassRegister)
-                    .content(res)
-                    .build();
-            JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
-        });
     }
 
     @Override
-    public void send(Object message) {
-        String data = JSONObject.toJSONString(message);
-        if (message instanceof ThreadSpace) {
-            this.eventQueue.put(data);
-        } else if (message instanceof ClassRegistryMsg) {
-            this.registryQueue.put(data);
-        } else {
-            LOGGER.warn(LogDicts.LOG_PREFIX + "send error, message is not JDataViewMsg or ClassRegistryMsg");
-        }
+    public void send(ThreadSpace message) {
+        String data = JSON.toJSONString(message);
+        this.eventQueue.put(data);
     }
 
     @Override
     public void close() {
         this.eventQueue.destroy();
-        this.registryQueue.destroy();
     }
 }

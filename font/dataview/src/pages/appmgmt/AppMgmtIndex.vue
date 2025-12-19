@@ -18,8 +18,16 @@ const jumpToThreadList = function (javaApp) {
 const loadJavaApp = function () {
   axios
     .get("/jdv/api/javaApp/getJavaApps")
-    .then(response=>{
+    .then(response => {
       javaApps.value = response.data
+    })
+}
+const clearAppMsg = function (javaApp) {
+  axios
+    .post("/jdv/api/javaApp/clearAppMsg", javaApp)
+    .then(response => {
+      console.log(response)
+      loadJavaApp()
     })
 }
 // init
@@ -33,6 +41,9 @@ loadJavaApp()
         <q-item-section>
           <q-item-label lines="1">{{ javaApp.appName }}</q-item-label>
           <q-item-label caption>{{ javaApp.host }} | {{ javaApp.pid }}</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn dense flat icon="clear" color="red" @click="clearAppMsg(javaApp)"/>
         </q-item-section>
       </q-item>
     </q-list>
