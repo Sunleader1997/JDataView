@@ -4,7 +4,7 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {path: '', component: () => import('pages/IndexPage.vue')},
-      {path: 'JDataPanel', component: () => import('pages/vueflow/panel/JDataPanel.vue')}
+      {path: 'applications', component: () => import('pages/appmgmt/AppMgmtIndex.vue')},
     ],
   },
 
