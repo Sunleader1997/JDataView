@@ -74,6 +74,13 @@ export default defineConfig((/* ctx */) => {
     devServer: {
       // https: true,
       open: true, // opens browser window automatically
+      proxy: {
+        '/jdv': {
+          target: 'http://127.0.0.1:19876',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/jdv/, ''),
+        },
+      }
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
@@ -91,7 +98,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify','AppFullscreen', 'Dialog']
     },
 
     // animations: 'all', // --- includes all animations

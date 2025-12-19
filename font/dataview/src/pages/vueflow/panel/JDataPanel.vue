@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {ref, toRaw} from 'vue'
 import {VueFlow} from '@vue-flow/core'
 
 // these components are only shown as examples of how to use a custom node or edge
@@ -9,7 +9,68 @@ import SpecialEdge from './components/SpecialEdge.vue'
 import {Background} from "@vue-flow/background";
 import {ControlButton, Controls} from "@vue-flow/controls";
 import {MiniMap} from "@vue-flow/minimap";
-
+const methodTreeMock = ref([
+  {
+    "id": "MSG-2001914366730883072",
+    "className": "TestController",
+    "methodName": "demo",
+    "startTime": 1766128553406,
+    "endTime": 1766128553425,
+    "cost": 19,
+    "depth": 0,
+    "children": [
+      {
+        "id": "MSG-2001914366760243200",
+        "className": "TestService",
+        "methodName": "test",
+        "startTime": 1766128553422,
+        "endTime": 1766128553422,
+        "cost": 0,
+        "depth": 1,
+        "children": [
+          {
+            "id": "MSG-2001914366760243201",
+            "className": "TestService",
+            "methodName": "test2",
+            "startTime": 1766128553422,
+            "endTime": 1766128553422,
+            "cost": 0,
+            "depth": 2,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "MSG-2001914366785409024",
+        "className": "TestService2",
+        "methodName": "test",
+        "startTime": 1766128553425,
+        "endTime": 1766128553425,
+        "cost": 0,
+        "depth": 1,
+        "children": [
+          {
+            "id": "MSG-2001914366810574848",
+            "className": "TestService2",
+            "methodName": "test2",
+            "startTime": 1766128553425,
+            "endTime": 1766128553425,
+            "cost": 0,
+            "depth": 2,
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+])
+const generateMethodTree = function (methodTree) {
+  methodTree.forEach((item)=>{
+    const rootMethodCall = toRaw(item)
+    console.log(rootMethodCall)
+  })
+}
+generateMethodTree(methodTreeMock.value)
 // these are our nodes
 const nodes = ref([
   // an input node, specified by using `type: 'input'`

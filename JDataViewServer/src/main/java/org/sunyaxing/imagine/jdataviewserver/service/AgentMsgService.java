@@ -11,16 +11,38 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
 import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
+import org.sunyaxing.imagine.jdataviewserver.controller.dtos.JavaAppDto;
+import org.sunyaxing.imagine.jdataviewserver.controller.dtos.ThreadDto;
 import org.sunyaxing.imagine.jdataviewserver.entity.AgentMsgEntity;
 import org.sunyaxing.imagine.jdataviewserver.entity.cover.EntityCover;
 import org.sunyaxing.imagine.jdataviewserver.service.repository.AgentMsgRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEntity> {
     public static final String PREFIX = "MSG-";
+
+    public List<JavaAppDto> generateJavaAppDto() {
+        List<AgentMsgEntity> appDataList = lambdaQuery()
+                .select(AgentMsgEntity::getPid, AgentMsgEntity::getAppName)
+                .groupBy(AgentMsgEntity::getPid, AgentMsgEntity::getAppName).list();
+        return appDataList.stream().map(agentMsgEntity -> {
+            return JavaAppDto.builder().host("127.0.0.1").appName(agentMsgEntity.getAppName()).pid(agentMsgEntity.getPid()).build();
+        }).toList();
+    }
+
+    public List<ThreadDto> generateThreadDto(JavaAppDto javaAppDto) {
+        List<AgentMsgEntity> threadList = lambdaQuery()
+                .select(AgentMsgEntity::getThreadId, AgentMsgEntity::getThreadName)
+                .eq(AgentMsgEntity::getAppName, javaAppDto.getAppName())
+                .eq(AgentMsgEntity::getPid, javaAppDto.getPid())
+                .groupBy(AgentMsgEntity::getThreadId, AgentMsgEntity::getThreadName)
+                .list();
+        return threadList.stream().map(agentMsgEntity -> {
+            return ThreadDto.builder().threadId(agentMsgEntity.getThreadId()).threadName(agentMsgEntity.getThreadName()).build();
+        }).toList();
+    }
 
     public static List<AgentMsgEntity> parseMsg(JDataViewMsg agentMsg) {
         return agentMsg.getContent().stream().map(strData -> {
@@ -35,30 +57,17 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
 
     /**
      * 获取 APP 所有的链路
-     *
-     * @param rootId TODO 将此节点作为根节点
      */
-    public Map<Long, MethodCall> generateBy(String rootId, String appName) {
+    public List<MethodCall> generateBy(String appName, String threadId) {
         // 获取日志, 根据ID进行排序可以保证方法执行的先后顺序
         List<AgentMsgEntity> agentMsgEntities = this.lambdaQuery()
                 .eq(AgentMsgEntity::getAppName, appName)
+                .eq(AgentMsgEntity::getThreadId, threadId)
                 .orderByAsc(AgentMsgEntity::getId)
                 .list();
-        // 将日志转换成堆栈
-        // 2. 按线程ID分组
-        Map<Long, List<AgentMsgEntity>> groupedByThread = agentMsgEntities.stream()
-                .collect(Collectors.groupingBy(AgentMsgEntity::getThreadId));
-
-        // 3. 为每个线程构建调用堆栈
-        Map<Long, MethodCall> threadCallStacks = new HashMap<>();
-        for (Map.Entry<Long, List<AgentMsgEntity>> entry : groupedByThread.entrySet()) {
-            Long threadId = entry.getKey();
-            List<AgentMsgEntity> messagesForThread = entry.getValue();
-            MethodCall methodCall = buildCallStack(messagesForThread); // 调用辅助方法
-            threadCallStacks.put(threadId, methodCall);
-        }
-
-        return threadCallStacks; // 返回所有线程的堆栈集合
+        // 为每个线程构建调用堆栈
+        List<MethodCall> methodCall = buildCallStack(agentMsgEntities); // 调用辅助方法
+        return methodCall; // 返回所有线程的堆栈集合
     }
 
     /**
@@ -68,27 +77,30 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
      * @param messages 属于同一个线程的消息列表，已按ID排序
      * @return 构建好的方法调用堆栈列表
      */
-    private MethodCall buildCallStack(List<AgentMsgEntity> messages) {
+    private List<MethodCall> buildCallStack(List<AgentMsgEntity> messages) {
+        List<MethodCall> result = new ArrayList<>();
         if (CollectionUtil.isEmpty(messages)) return null;
         // 用栈来维护当前的调用链
         Deque<MethodCall> callStack = new ArrayDeque<>();
         // 正常来说第一个数据就是根节点，如果不是说明数据有问题
-        Iterator<AgentMsgEntity> iterator = messages.iterator();
-        AgentMsgEntity firstMessage = iterator.next();
-        MethodCall root = MethodCall.buildRoot(firstMessage);
-        callStack.push(root);
-        while (iterator.hasNext()) {
-            // 如果栈已经排空了，说明后面的数据不属于该根节点堆栈
-            if (callStack.isEmpty()) {
-                return root;
-            }
-            AgentMsgEntity next = iterator.next();
+        for (AgentMsgEntity next : messages) {
             switch (next.getMethodState()) {
                 case ENTER -> {
-                    MethodCall childStartMethod = MethodCall.buildRoot(next);
-                    // 获取栈顶元素（不移除）
-                    callStack.peek().addChild(childStartMethod);
-                    callStack.push(childStartMethod);
+                    // 如果堆栈排空，则创建根节点
+                    if (callStack.isEmpty()) {
+                        MethodCall rootMethod = MethodCall.buildRoot(next);
+                        // 将根节点加入结果
+                        result.add(rootMethod);
+                        callStack.push(rootMethod);
+                    } else {
+                        MethodCall childStartMethod = MethodCall.buildRoot(next);
+                        // 获取栈顶元素（不移除）
+                        MethodCall parent = callStack.peek();
+                        if (parent != null) {
+                            parent.addChild(childStartMethod);
+                        }
+                        callStack.push(childStartMethod);
+                    }
                 }
                 case SUC, EXCEPTION -> {
                     // 栈弹出
@@ -99,7 +111,7 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
                 }
             }
         }
-        return root;
+        return result;
     }
 
     // 内部类：表示一次方法调用及其子调用
@@ -108,19 +120,23 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MethodCall {
+        private String id;
         private String className;
         private String methodName;
         private long startTime;
         private long endTime = -1; // 默认值表示未结束
         private long cost = -1;
+        private long depth;
         private List<MethodCall> children = new ArrayList<>();
 
         public static MethodCall buildRoot(AgentMsgEntity agentMsgEntity) {
             if (!agentMsgEntity.isMethodStart()) throw new RuntimeException("当前节点非ENTER节点");
             return MethodCall.builder()
+                    .id(agentMsgEntity.getId())
                     .className(agentMsgEntity.getClassName())
                     .methodName(agentMsgEntity.getMethodName())
                     .startTime(agentMsgEntity.getMethodStartTime())
+                    .depth(agentMsgEntity.getDepth())
                     .children(new ArrayList<>())
                     .build();
         }

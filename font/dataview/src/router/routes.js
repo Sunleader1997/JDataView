@@ -3,8 +3,26 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      {path: '', component: () => import('pages/IndexPage.vue')},
-      {path: 'applications', component: () => import('pages/appmgmt/AppMgmtIndex.vue')},
+      {
+        path: '',
+        name: 'home',
+        component: () => import('pages/IndexPage.vue')
+      },
+      {
+        path: 'applications',
+        name: 'applications',
+        component: () => import('pages/appmgmt/AppMgmtIndex.vue'),
+      },
+      {
+        path: 'applications/threads',
+        name: 'threads',
+        component: () => import('pages/appmgmt/threads/ThreadList.vue')
+      },
+      {
+        path: 'applications/threads/panel',
+        name: 'threadPanel',
+        component: () => import('pages/vueflow/panel/JDataPanel.vue')
+      }
     ],
   },
 

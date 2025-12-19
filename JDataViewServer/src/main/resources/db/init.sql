@@ -20,15 +20,6 @@ create index AGENT_MSG_FOR_SELECT
     on AGENT_MSG (APP_NAME, THREAD_ID, CLASS_NAME, METHOD_NAME, METHOD_START_TIME);
 
 
--- 项目列表
-create table APP
-(
-    ID          CHARACTER VARYING not null,
-    NAME        CHARACTER VARYING not null,
-    DESCRIPTION CHARACTER VARYING,
-    constraint APP_PK
-        primary key (ID)
-);
 
 -- 转成的节点信息
 create table NODE

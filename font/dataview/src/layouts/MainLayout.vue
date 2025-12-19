@@ -2,80 +2,30 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-bar class="bg-black text-white">
-        <q-breadcrumbs active-color="white" style="font-size: 16px">
-          <q-breadcrumbs-el icon="home" to="/" />
-          <q-breadcrumbs-el label="App" icon="widgets" to="/applications" />
-          <q-breadcrumbs-el label="Threads" icon="navigation" to="/applications/threads" />
+        <q-breadcrumbs>
+          <q-breadcrumbs-el icon="home" to="/"/>
+          <q-breadcrumbs-el label="JavaApp" icon="widgets" to="/applications"/>
+          <q-breadcrumbs-el :label="`PID(`+appStore.currentApp?.pid+`)`" icon="format_list_numbered" to="/applications/threads"/>
         </q-breadcrumbs>
       </q-bar>
     </q-header>
 
-<!--    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>-->
-<!--      <q-list>-->
-<!--        <q-item-label header> Essential Links </q-item-label>-->
+    <!--    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>-->
+    <!--      <q-list>-->
+    <!--        <q-item-label header> Essential Links </q-item-label>-->
 
-<!--        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />-->
-<!--      </q-list>-->
-<!--    </q-drawer>-->
+    <!--        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />-->
+    <!--      </q-list>-->
+    <!--    </q-drawer>-->
 
     <q-page-container>
-      <router-view />
+      <router-view/>
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup>
-// import { ref } from 'vue'
-// import EssentialLink from 'components/EssentialLink.vue'
+import {useAppStore} from "stores/app-store.js";
 
-// const linksList = [
-//   {
-//     title: 'Docs',
-//     caption: 'quasar.dev',
-//     icon: 'school',
-//     link: 'https://quasar.dev',
-//   },
-//   {
-//     title: 'Github',
-//     caption: 'github.com/quasarframework',
-//     icon: 'code',
-//     link: 'https://github.com/quasarframework',
-//   },
-//   {
-//     title: 'Discord Chat Channel',
-//     caption: 'chat.quasar.dev',
-//     icon: 'chat',
-//     link: 'https://chat.quasar.dev',
-//   },
-//   {
-//     title: 'Forum',
-//     caption: 'forum.quasar.dev',
-//     icon: 'record_voice_over',
-//     link: 'https://forum.quasar.dev',
-//   },
-//   {
-//     title: 'Twitter',
-//     caption: '@quasarframework',
-//     icon: 'rss_feed',
-//     link: 'https://twitter.quasar.dev',
-//   },
-//   {
-//     title: 'Facebook',
-//     caption: '@QuasarFramework',
-//     icon: 'public',
-//     link: 'https://facebook.quasar.dev',
-//   },
-//   {
-//     title: 'Quasar Awesome',
-//     caption: 'Community Quasar projects',
-//     icon: 'favorite',
-//     link: 'https://awesome.quasar.dev',
-//   },
-// ]
-
-// const leftDrawerOpen = ref(false)
-
-// function toggleLeftDrawer() {
-//   leftDrawerOpen.value = !leftDrawerOpen.value
-// }
+const appStore = useAppStore()
 </script>

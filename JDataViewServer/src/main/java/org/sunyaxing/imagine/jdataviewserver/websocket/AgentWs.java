@@ -2,6 +2,8 @@ package org.sunyaxing.imagine.jdataviewserver.websocket;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson2.JSONObject;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
@@ -9,6 +11,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.WsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,6 +20,7 @@ import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
 import org.sunyaxing.imagine.jdataviewserver.service.AppService;
 import org.sunyaxing.imagine.jdataviewserver.service.NodeService;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -58,11 +62,11 @@ public class AgentWs {
     }
 
     @OnMessage
-    public void onMessage(String payload, Session session) {
+    public void onMessage(String payload, WsSession session) {
         LOGGER.info("收到消息: {}", payload);
         JDataViewMsg jDataViewMsg = JSONObject.parseObject(payload, JDataViewMsg.class);
         // 根据 agentMsg 创建应用
-        appService.insertByAgentMsg(jDataViewMsg);
+        appService.insertByAgentMsg("127.0.0.1", jDataViewMsg.getPid(), jDataViewMsg.getAppName());
         switch (jDataViewMsg.getMsgType()) {
             case ClassRegister -> {
                 // 创建 node 节点

@@ -1,22 +1,22 @@
 package org.sunyaxing.imagine.jdataviewserver.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @Builder
 @Data
 @ToString
 @TableName("APP")
-public class AppEntity {
-    @TableField("id")
-    private String id;
+public class AppEntity implements Serializable {
+    @TableField("pid")
+    private Long pid;
     @TableField("name")
     private String name;
-    @TableField("description")
-    private String description;
+    @TableField("host")
+    private String host;
 }
