@@ -22,13 +22,6 @@ public class JavaAppController {
      */
     @GetMapping("/getJavaApps")
     public Result<List<JavaAppDto>> getJavaApps() {
-        // 本地JVM中的服务
-//        List<VirtualMachineDescriptor> vms = VirtualMachine.list();
-//        List<JavaAppDto> javaAppDtos = vms.stream().map(vm -> {
-//            String pid = vm.id();
-//            String name = vm.displayName();
-//            return JavaAppDto.builder().pid(Long.valueOf(pid)).appName(name).host("127.0.0.1").build();
-//        }).toList();
         List<JavaAppDto> javaAppDtos = agentMsgService.generateJavaAppDto();
         return Result.success(javaAppDtos);
     }

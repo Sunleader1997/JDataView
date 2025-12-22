@@ -49,7 +49,7 @@ public class EventQueue implements Destroyable {
             String item = blockingDeque.take();
             // 一次消费多条信息
             dataList.add(item);
-            blockingDeque.drainTo(dataList, 999);
+            blockingDeque.drainTo(dataList, 19);
             return dataList;
         } catch (Exception e) {
             LOGGER.error("queue 拉取数据异常", e);
@@ -64,7 +64,13 @@ public class EventQueue implements Destroyable {
      */
     public boolean put(String data) {
         // 为了不影响程序正常执行应该选择offer
-        return blockingDeque.offer(data);
+        try{
+            blockingDeque.put(data);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+//        return blockingDeque.put(data);
+        return true;
     }
 
     @Override

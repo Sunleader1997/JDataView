@@ -6,6 +6,11 @@ import org.springframework.stereotype.Service;
 public class TestService {
     public String test(String demo1) {
         test2();
+        try {
+            Thread.sleep(1000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return "test";
     }
 
