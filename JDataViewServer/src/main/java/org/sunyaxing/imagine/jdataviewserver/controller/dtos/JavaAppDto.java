@@ -13,4 +13,7 @@ public class JavaAppDto {
     private Long pid;
     private String appName;
     private String host;
+    private boolean alive = false;
+    private boolean hasLog = false;
+    private boolean hasAttached = false;
 }

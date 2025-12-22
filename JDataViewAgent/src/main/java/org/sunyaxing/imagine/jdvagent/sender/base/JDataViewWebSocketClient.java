@@ -28,6 +28,16 @@ public class JDataViewWebSocketClient extends WebSocketClient {
         return INSTANCE;
     }
 
+    public static void reCreate() {
+        try {
+            if (INSTANCE != null) INSTANCE.close();
+        } catch (Exception e) {
+            LOGGER.error(LogDicts.LOG_PREFIX + "关闭连接异常", e);
+        }
+        INSTANCE = new JDataViewWebSocketClient(URI.create(DEFAULT_SERVER_URI));
+        INSTANCE.connect();
+    }
+
     public JDataViewWebSocketClient(URI serverUri) {
         super(serverUri);
     }

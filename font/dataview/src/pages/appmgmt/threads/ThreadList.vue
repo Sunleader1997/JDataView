@@ -31,7 +31,7 @@ const loadMethodCallTree = function (appName, threadId) {
     })
 }
 // 获取线程列表
-const loadAppThreadList = function () {
+const loadAppThreadList = function (done) {
   axios
     .post("/jdv/api/javaApp/getTreadList", currentApp)
     .then(response => {
@@ -44,7 +44,22 @@ const loadAppThreadList = function () {
           active: false
         }
       })
+      if (done) {
+        done()
+      }
     })
+}
+const showDate = function (timestamp) {
+  const date = new Date(timestamp);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
 }
 loadAppThreadList()
 </script>
@@ -52,36 +67,50 @@ loadAppThreadList()
 <template>
   <q-page class="home-index bg-dark flex">
     <q-card dark class="flex full-width">
-      <q-splitter v-model="splitterModel" unit="px">
+      <q-splitter v-model="splitterModel" unit="px" after-class="flex">
         <template v-slot:before>
           <q-tabs
             v-model="activeTab"
             dense
-            class="text-grey "
+            class="text-grey scroll"
             active-color="primary"
             indicator-color="primary"
             vertical
             @update:model-value="onTabChange"
           >
-            <q-tab v-for="thread in threads" :name="thread.threadId" :label="thread.threadName" :key="thread.threadId"/>
+            <q-pull-to-refresh @refresh="loadAppThreadList" bg-color="black">
+              <q-tab v-for="thread in threads" :name="thread.threadId" :label="thread.threadName"
+                     :key="thread.threadId"/>
+            </q-pull-to-refresh>
           </q-tabs>
         </template>
         <template v-slot:after>
-          <q-tree dark :nodes="methodCallTree" node-key="id" v-model:selected="selectedMethod">
-            <template v-slot:default-header="prop">
-              <div class="row q-gutter-md">
-                <div class="text-weight-bold class-name">{{ prop.node.className }}</div>
-                <div class="text-weight-bold method-name">{{ prop.node.methodName }}</div>
-                <q-badge outline color="primary" :label="prop.node.cost + 'ms'" />
-              </div>
-            </template>
-            <q-tooltip
-              transition-show="flip-right"
-              transition-hide="flip-left"
+          <q-timeline class="q-ml-md" color="secondary">
+            <q-timeline-entry
+              v-for="methodCallItem in methodCallTree"
+              :key="methodCallItem.id"
+              :subtitle="showDate(methodCallItem.startTime)"
             >
-              Here I am!
-            </q-tooltip>
-          </q-tree>
+              <div>
+                <q-tree dark :nodes="[{...methodCallItem}]" node-key="id" v-model:selected="selectedMethod">
+                  <template v-slot:default-header="prop">
+                    <div class="row q-gutter-md">
+                      <div class="text-weight-bold class-name">{{ prop.node.className }}</div>
+                      <div class="text-weight-bold method-name">{{ prop.node.methodName }}</div>
+                      <q-badge outline color="primary" :label="prop.node.cost + 'ms'"/>
+                    </div>
+                  </template>
+                  <q-tooltip
+                    transition-show="flip-right"
+                    transition-hide="flip-left"
+                  >
+                    Here I am!
+                  </q-tooltip>
+                </q-tree>
+              </div>
+            </q-timeline-entry>
+
+          </q-timeline>
         </template>
       </q-splitter>
     </q-card>
@@ -89,10 +118,11 @@ loadAppThreadList()
 </template>
 
 <style scoped>
-.class-name{
+.class-name {
   color: #a5a5a5;
 }
-.method-name{
+
+.method-name {
   color: #3f9be7;
 }
 </style>

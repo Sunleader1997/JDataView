@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.sunyaxing.imagine.jdataviewapi.data.ClassRegistryMsg;
 import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
 import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
+import org.sunyaxing.imagine.jdvagent.ConfigProperties;
+import org.sunyaxing.imagine.jdvagent.JDataViewAgent;
 import org.sunyaxing.imagine.jdvagent.dicts.LogDicts;
 import org.sunyaxing.imagine.jdvagent.sender.base.EventQueue;
 import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
@@ -22,13 +24,12 @@ public class JDataViewEventSender implements Sender {
 
     private final EventQueue eventQueue;
     public static final long PID = ProcessHandle.current().pid();
-    public static final String APP_NAME = System.getProperty("sun.java.command");
 
     public JDataViewEventSender() {
         this.eventQueue = new EventQueue(res -> {
             // 发送服务信息
             JDataViewMsg appMsg = JDataViewMsg.builder()
-                    .appName(APP_NAME)
+                    .appName(JDataViewAgent.configProperties.getAppName())
                     .pid(PID)
                     .msgType(JDataViewMsg.MsgType.MethodCall)
                     .content(res)

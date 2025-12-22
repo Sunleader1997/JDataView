@@ -25,10 +25,10 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
 
     public List<JavaAppDto> generateJavaAppDto() {
         List<AgentMsgEntity> appDataList = lambdaQuery()
-                .select(AgentMsgEntity::getPid, AgentMsgEntity::getAppName)
-                .groupBy(AgentMsgEntity::getPid, AgentMsgEntity::getAppName).list();
+                .select(AgentMsgEntity::getAppName)
+                .groupBy(AgentMsgEntity::getAppName).list();
         return appDataList.stream().map(agentMsgEntity -> {
-            return JavaAppDto.builder().host("127.0.0.1").appName(agentMsgEntity.getAppName()).pid(agentMsgEntity.getPid()).build();
+            return JavaAppDto.builder().host("127.0.0.1").appName(agentMsgEntity.getAppName()).pid(0L).build();
         }).toList();
     }
 
@@ -36,7 +36,7 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
         List<AgentMsgEntity> threadList = lambdaQuery()
                 .select(AgentMsgEntity::getThreadId, AgentMsgEntity::getThreadName)
                 .eq(AgentMsgEntity::getAppName, javaAppDto.getAppName())
-                .eq(AgentMsgEntity::getPid, javaAppDto.getPid())
+                //.eq(AgentMsgEntity::getPid, javaAppDto.getPid())
                 .groupBy(AgentMsgEntity::getThreadId, AgentMsgEntity::getThreadName)
                 .list();
         return threadList.stream().map(agentMsgEntity -> {
@@ -67,6 +67,7 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
                 .list();
         // 为每个线程构建调用堆栈
         List<MethodCall> methodCall = buildCallStack(agentMsgEntities); // 调用辅助方法
+        Collections.reverse(methodCall);
         return methodCall; // 返回所有线程的堆栈集合
     }
     /**

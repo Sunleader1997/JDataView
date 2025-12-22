@@ -4,15 +4,24 @@ import lombok.Data;
 
 @Data
 public class ConfigProperties {
+    private static final String APP_COMMAND = System.getProperty("sun.java.command");
+
+    private boolean attached;
+    private String mode;
     private String endpoint = "ws://127.0.0.1:19876/agent";
     private String scanPack = "";
+    private String appName = "";
 
     public void valid() {
-        if (scanPack.isEmpty()) {
-            throw new RuntimeException("scanPack is empty");
+        if (mode.isEmpty()) {
+            throw new RuntimeException("mode is empty");
         }
-        if (endpoint.isEmpty()) {
-            throw new RuntimeException("endpoint is empty");
+    }
+
+    public String getAppName() {
+        if (appName.isEmpty()) {
+            return APP_COMMAND;
         }
+        return appName;
     }
 }
