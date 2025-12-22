@@ -40,7 +40,9 @@ public class JavaAppController {
         Map<String, JavaAppDto> aliveApps = vms.stream().map(vm -> {
             String pid = vm.id();
             String name = vm.displayName().split(" ")[0];
-            return JavaAppDto.builder().pid(Long.valueOf(pid)).appName(name).host("127.0.0.1").alive(true).build();
+            JavaAppDto javaAppDto = JavaAppDto.builder().pid(Long.valueOf(pid)).appName(name).host("127.0.0.1").alive(true).build();
+            javaAppDto.setHasAttached(ATTACHED_VMS.containsKey(javaAppDto.getPid()));
+            return javaAppDto;
         }).collect(Collectors.toMap(JavaAppDto::getAppName, app -> app));
         // 从数据库中获取APP列表
         for (JavaAppDto appFromDb : agentMsgService.generateJavaAppDto()) {
@@ -49,7 +51,6 @@ public class JavaAppController {
                 JavaAppDto aliveApp = aliveApps.get(appFromDb.getAppName());
                 aliveApp.setAlive(true);
                 aliveApp.setHasLog(true);
-                aliveApp.setHasAttached(ATTACHED_VMS.containsKey(aliveApp.getPid()));
             } else {
                 appFromDb.setAlive(false);
                 appFromDb.setHasLog(true);
