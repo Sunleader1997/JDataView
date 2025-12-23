@@ -22,7 +22,7 @@ const selectedMethod = ref(null)
 // 获取堆栈
 const loadMethodCallTree = function (appName, threadId) {
   axios
-    .post("/jdv/api/javaApp/getMethodTree", {
+    .post("/api/javaApp/getMethodTree", {
       appName,
       threadId
     })
@@ -33,7 +33,7 @@ const loadMethodCallTree = function (appName, threadId) {
 // 获取线程列表
 const loadAppThreadList = function (done) {
   axios
-    .post("/jdv/api/javaApp/getTreadList", currentApp)
+    .post("/api/javaApp/getTreadList", currentApp)
     .then(response => {
       const threadList = response.data;
       // 修改数据结构

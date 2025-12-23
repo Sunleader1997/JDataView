@@ -17,14 +17,14 @@ const jumpToThreadList = function (javaApp) {
 }
 const loadJavaApp = function () {
   axios
-    .get("/jdv/api/javaApp/getJavaApps")
+    .get("/api/javaApp/getJavaApps")
     .then(response => {
       javaApps.value = response.data
     })
 }
 const clearAppMsg = function (javaApp) {
   axios
-    .post("/jdv/api/javaApp/clearAppMsg", javaApp)
+    .post("/api/javaApp/clearAppMsg", javaApp)
     .then(response => {
       console.log(response)
       loadJavaApp()
@@ -33,7 +33,7 @@ const clearAppMsg = function (javaApp) {
 const attachApp = function (javaApp) {
   javaApp.loading = true
   axios
-    .post("/jdv/api/javaApp/attach", javaApp)
+    .post("/api/javaApp/attach", javaApp)
     .then(response => {
       console.log(response)
       javaApp.loading = false
@@ -46,7 +46,7 @@ const attachApp = function (javaApp) {
 const detach = function (javaApp) {
   javaApp.loading = true
   axios
-    .post("/jdv/api/javaApp/detach", javaApp)
+    .post("/api/javaApp/detach", javaApp)
     .then(response => {
       console.log(response)
       javaApp.loading = false

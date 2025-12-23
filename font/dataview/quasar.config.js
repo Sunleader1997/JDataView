@@ -75,10 +75,10 @@ export default defineConfig((/* ctx */) => {
       // https: true,
       open: true, // opens browser window automatically
       proxy: {
-        '/jdv': {
+        '/api': {
           target: 'http://127.0.0.1:19876',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/jdv/, ''),
+          rewrite: (path) => path,
         },
       }
     },
