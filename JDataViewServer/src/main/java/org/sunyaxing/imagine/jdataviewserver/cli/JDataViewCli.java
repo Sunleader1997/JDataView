@@ -7,12 +7,18 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Set;
 
-public class JDataViewCli {
+@Configuration
+public class JDataViewCli implements ApplicationRunner {
 
-    public static void main(String[] args) throws Exception {
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        System.setProperty("java.awt.headless", "false");
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
