@@ -30,17 +30,19 @@ const clearAppMsg = function (javaApp) {
       loadJavaApp()
     })
 }
-const attachApp = function (javaApp) {
-  javaApp.loading = true
+const attachJavaApp = ref({})
+const attachApp = function () {
+  attachJavaApp.value.loading = true
   axios
-    .post("/api/javaApp/attach", javaApp)
+    .post("/api/javaApp/attach", attachJavaApp.value)
     .then(response => {
       console.log(response)
-      javaApp.loading = false
+      attachJavaApp.value.loading = false
+      attachDialog.value = false
       loadJavaApp()
     }).catch(error => {
       console.log(error)
-      javaApp.loading = false
+      attachJavaApp.value.loading = false
     })
 }
 const detach = function (javaApp) {
@@ -55,6 +57,11 @@ const detach = function (javaApp) {
     console.log(error)
     javaApp.loading = false
   })
+}
+const attachDialog = ref(false)
+const openAttachDialog = function (javaApp){
+  attachDialog.value = true
+  attachJavaApp.value = {...toRaw(javaApp), scanPackage: ''}
 }
 // init
 loadJavaApp()
@@ -84,12 +91,28 @@ loadJavaApp()
           <q-item-section side top>
             <div class="text-grey-8 q-gutter-xs">
               <q-btn v-if="javaApp.hasAttached" dense flat icon="output" color="red" @click.stop="detach(javaApp)" :loading="javaApp.loading"/>
-              <q-btn v-else dense flat icon="input" color="primary" @click.stop="attachApp(javaApp)" :loading="javaApp.loading"/>
+              <q-btn v-else dense flat icon="input" color="primary" @click.stop="openAttachDialog(javaApp)"/>
             </div>
           </q-item-section>
         </q-item>
       </q-slide-item>
     </q-list>
+    <q-dialog v-model="attachDialog" persistent backdrop-filter="blur(4px)">
+      <q-card dark style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Scan Package</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input dark dense standout v-model="attachJavaApp.scanPackage" autofocus placeholder="com.xxx.xxx"/>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Attach" @click="attachApp()" :loading="attachJavaApp.loading"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
