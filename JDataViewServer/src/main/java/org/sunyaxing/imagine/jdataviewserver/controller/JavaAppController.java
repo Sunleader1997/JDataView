@@ -92,13 +92,8 @@ public class JavaAppController {
             if (optional.isPresent()) {
                 VirtualMachineDescriptor virtualMachineDescriptor = optional.get();
                 String displayName = virtualMachineDescriptor.displayName().split(" ")[0];
-                String packageName = "";
-                int lastDotIndex = displayName.lastIndexOf('.');
-                if (lastDotIndex > 0) {
-                    packageName = displayName.substring(0, lastDotIndex);
-                }
                 VirtualMachine virtualMachine = VirtualMachine.attach(virtualMachineDescriptor);
-                virtualMachine.loadAgent("/opt/JDataView/agent/JDataViewAgent-1.0.0.jar", "mode=install;scanPack=" + packageName + ";appName=" + displayName);
+                virtualMachine.loadAgent("/opt/JDataView/agent/JDataViewAgent-1.0.0.jar", "mode=install;scanPack=" + javaAppDto.getScanPackage() + ";appName=" + displayName);
                 ATTACHED_VMS.put(javaAppDto.getPid(), virtualMachine);
                 return Result.success(true);
             }

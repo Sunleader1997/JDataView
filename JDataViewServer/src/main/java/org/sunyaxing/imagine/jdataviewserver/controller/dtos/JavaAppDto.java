@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class JavaAppDto {
     private Long pid;
     private String appName;
+    private String scanPackage;
     private String host;
     private boolean alive = false;
     private boolean hasLog = false;
