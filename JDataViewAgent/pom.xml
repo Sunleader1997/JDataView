@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <project.plugins.outputDir>/opt/JDataViewAgent/agent</project.plugins.outputDir>
+        <project.plugins.outputDir>/opt/JDataView/agent</project.plugins.outputDir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdataview.version>1.0.0</jdataview.version>
     </properties>

@@ -98,7 +98,7 @@ public class JavaAppController {
                     packageName = displayName.substring(0, lastDotIndex);
                 }
                 VirtualMachine virtualMachine = VirtualMachine.attach(virtualMachineDescriptor);
-                virtualMachine.loadAgent("/opt/JDataViewAgent/agent/JDataViewAgent-1.0.0.jar", "mode=install;scanPack=" + packageName + ";appName=" + displayName);
+                virtualMachine.loadAgent("/opt/JDataView/agent/JDataViewAgent-1.0.0.jar", "mode=install;scanPack=" + packageName + ";appName=" + displayName);
                 ATTACHED_VMS.put(javaAppDto.getPid(), virtualMachine);
                 return Result.success(true);
             }
@@ -112,7 +112,7 @@ public class JavaAppController {
     public Result<Boolean> detach(@RequestBody JavaAppDto javaAppDto) {
         try {
             VirtualMachine virtualMachine = ATTACHED_VMS.get(javaAppDto.getPid());
-            virtualMachine.loadAgent("/opt/JDataViewAgent/agent/JDataViewAgent-1.0.0.jar", "mode=uninstall");
+            virtualMachine.loadAgent("/opt/JDataView/agent/JDataViewAgent-1.0.0.jar", "mode=uninstall");
             virtualMachine.detach();
             ATTACHED_VMS.remove(javaAppDto.getPid());
             return Result.success(true);

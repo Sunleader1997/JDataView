@@ -1,0 +1,13 @@
+[Unit]
+Description=JDataView
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/JDataView
+ExecStart=/opt/JDataView/startup.sh start
+ExecStop=/opt/JDataView/startup.sh stop
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,52 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    <id>noJdk</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <!--if auto generate a root folder-->
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>JDataViewServer/src/main/resources</directory>
+            <outputDirectory>/opt/JDataView/config</outputDirectory>
+            <fileMode>777</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>JDataViewServer/db</directory>
+            <outputDirectory>/opt/JDataView/db</outputDirectory>
+            <fileMode>777</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>/opt/JDataView/agent</directory>
+            <outputDirectory>/opt/JDataView/agent</outputDirectory>
+            <fileMode>777</fileMode>
+        </fileSet>
+    </fileSets>
+
+    <!--copy the jar into the zip-->
+    <files>
+        <file>
+            <source>${project.basedir}/JDataViewServer/target/JDataViewServer-1.0.0.jar</source>
+            <outputDirectory>/opt/JDataView</outputDirectory>
+            <fileMode>777</fileMode>
+        </file>
+        <file>
+            <source>${project.basedir}/JDataViewServer/src/main/resources/jdataview.service</source>
+            <outputDirectory>/usr/lib/systemd/system</outputDirectory>
+            <fileMode>777</fileMode>
+        </file>
+        <file>
+            <source>${project.basedir}/JDataViewServer/src/main/resources/startup.sh</source>
+            <outputDirectory>/opt/JDataView</outputDirectory>
+            <fileMode>777</fileMode>
+        </file>
+    </files>
+    <!--package the jar and figure out if contain artifact, if true there will be many dependency jars-->
+    <!--<dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+    </dependencySets>-->
+</assembly>
