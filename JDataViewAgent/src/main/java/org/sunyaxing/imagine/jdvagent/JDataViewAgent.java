@@ -16,6 +16,7 @@ import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,9 +78,10 @@ public class JDataViewAgent {
         classFileTransformerOnInstall = new AgentBuilder.Default()
                 .with(AgentBuilder.InitializationStrategy.NoOp.INSTANCE)
                 .with(AgentBuilder.RedefinitionStrategy.REDEFINITION)
+                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION) // 启用 retransformation
                 .type(getElementMatcher())
                 .transform((builder, typeDescription, classLoader, module, protectionDomain) -> {
-                    // 备份原始字节码
+                    System.out.println("INSTALL " + typeDescription);
                     OrgClassByteManager.put(typeDescription.getName(), classLoader, builder.make().getBytes());
                     DynamicType.Builder<?> dynamicType = builder
                             .visit(Advice.to(ProfilingAdvice.class).on(

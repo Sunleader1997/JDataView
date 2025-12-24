@@ -1,8 +1,12 @@
 package org.sunyaxing.imagine.jdataviewserver.cli;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.dialogs.ActionListDialogBuilder;
+import com.googlecode.lanterna.gui2.dialogs.TextInputDialogBuilder;
 import com.googlecode.lanterna.gui2.table.Table;
+import com.googlecode.lanterna.gui2.table.TableModel;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -12,7 +16,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
 import org.sunyaxing.imagine.jdataviewserver.controller.JavaAppController;
+import org.sunyaxing.imagine.jdataviewserver.controller.dtos.JavaAppDto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +28,11 @@ public class JDataViewCli implements ApplicationRunner {
     @Autowired
     private JavaAppController javaAppController;
 
+    private MultiWindowTextGUI gui;
+    private Table<String> mainAppListTable;
+    private List<JavaAppDto> appListCache;
+    private JavaAppDto selectedApp;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         List<String> modes = args.getOptionValues("mode");
@@ -30,7 +41,7 @@ public class JDataViewCli implements ApplicationRunner {
             Terminal terminal = new DefaultTerminalFactory().createTerminal();
             Screen screen = new TerminalScreen(terminal);
             screen.startScreen();
-            MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
+            gui = new MultiWindowTextGUI(screen);
             gui.updateScreen();
             BasicWindow window = new BasicWindow("JDataView CLI");
             window.setHints(Set.of(
@@ -70,9 +81,7 @@ public class JDataViewCli implements ApplicationRunner {
         titleBar.addComponent(titleLabel, BorderLayout.Location.CENTER);
 
         // Refresh button
-        Button refreshButton = new Button("Refresh (R)", () -> {
-//            refreshAppList();
-        });
+        Button refreshButton = new Button("Refresh", this::refreshAppList);
         titleBar.addComponent(refreshButton, BorderLayout.Location.RIGHT);
         titleBar.withBorder(Borders.singleLine());
         return titleBar;
@@ -81,12 +90,67 @@ public class JDataViewCli implements ApplicationRunner {
     private Panel createAppListPanel() {
         Panel listPanel = new Panel();
         listPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-
-        Table<String> table = new Table<String>("Application", "Status", "Attached");
-        javaAppController.getJavaApps().getData().forEach(javaAppDto -> {
-            table.getTableModel().addRow(javaAppDto.getAppName(), javaAppDto.isAlive() ? "Alive" : "Dead", javaAppDto.isHasAttached() ? "Attached" : "Detached");
+        mainAppListTable = new Table<String>("Application", "Status", "Attached");
+        appListCache = new ArrayList<>();
+        refreshAppList();
+        mainAppListTable.setSelectAction(() -> {
+            int selectedRow = mainAppListTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                // 选中app
+                selectedApp = appListCache.get(selectedRow);
+                // 显示
+                showActionDialog();
+            }
         });
-        listPanel.addComponent(table);
+        listPanel.addComponent(mainAppListTable);
         return listPanel;
+    }
+
+    public void refreshAppList() {
+        TableModel<String> tableModel = mainAppListTable.getTableModel();
+        tableModel.clear();
+        CollectionUtil.clear(appListCache);
+        appListCache.addAll(javaAppController.getJavaApps().getData());
+        appListCache.forEach(javaAppDto -> {
+            tableModel.addRow(javaAppDto.getAppName(), javaAppDto.isAlive() ? "Alive" : "Dead", javaAppDto.isHasAttached() ? "Attached" : "Detached");
+        });
+    }
+
+    public String showAttachDialog() {
+        return new TextInputDialogBuilder()
+                .setTitle("Input package: (com.xxx.xxx)")
+                //.setValidationPattern(Pattern.compile("[0-9]"), "You didn't enter a single number!")
+                .build()
+                .showDialog(gui);
+    }
+
+    public void showActionDialog() {
+        new ActionListDialogBuilder()
+                .setTitle(selectedApp.getAppName())
+                .setDescription("")
+                .addAction("Stack", new Runnable() {
+                    @Override
+                    public void run() {
+                        // Do 1st thing...
+                    }
+                })
+                .addAction("Attach", new Runnable() {
+                    @Override
+                    public void run() {
+                        String packagePrefix = showAttachDialog();
+                        selectedApp.setScanPackage(packagePrefix);
+                        System.out.println(selectedApp);
+                        // doAttach
+                        refreshAppList();
+                    }
+                })
+                .addAction("Detach", new Runnable() {
+                    @Override
+                    public void run() {
+                        // Do 3rd thing...
+                    }
+                })
+                .build()
+                .showDialog(gui);
     }
 }
