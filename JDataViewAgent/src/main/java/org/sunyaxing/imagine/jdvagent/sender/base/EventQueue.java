@@ -67,7 +67,7 @@ public class EventQueue implements Destroyable {
         try{
             blockingDeque.put(data);
         }catch (Exception e){
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(),e);
         }
 //        return blockingDeque.put(data);
         return true;

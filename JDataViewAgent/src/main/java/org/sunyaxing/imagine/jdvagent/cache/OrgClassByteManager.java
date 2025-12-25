@@ -1,5 +1,8 @@
 package org.sunyaxing.imagine.jdvagent.cache;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.util.Map;
@@ -7,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class OrgClassByteManager {
     private static final Map<String, OrgClassInfo> CLASS_BYTE_MAP = new ConcurrentHashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(OrgClassByteManager.class);
 
     public static void put(String className, ClassLoader classLoader, byte[] bytes) {
         try {
@@ -16,7 +20,7 @@ public class OrgClassByteManager {
             orgClassInfo.setClassLoader(classLoader);
             CLASS_BYTE_MAP.put(className, orgClassInfo);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
         }
     }
 
@@ -39,7 +43,7 @@ public class OrgClassByteManager {
             try {
                 restore(className, instrumentation);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getMessage(),e);
             }
         }
     }

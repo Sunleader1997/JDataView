@@ -4,6 +4,8 @@ import cn.hutool.core.thread.ThreadUtil;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.sunyaxing.imagine.jdataviewserver.common.Result;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/javaApp")
 public class JavaAppController {
 
+    private static final Logger log = LoggerFactory.getLogger(JavaAppController.class);
     @Autowired
     private AgentMsgService agentMsgService;
 
@@ -36,7 +39,6 @@ public class JavaAppController {
      */
     @GetMapping("/getJavaApps")
     public Result<List<JavaAppDto>> getJavaApps() {
-        ThreadUtil.sleep(2, TimeUnit.SECONDS);
         // 读取 JVM 列表
         List<VirtualMachineDescriptor> vms = VirtualMachine.list();
         // 所有存活APP
@@ -101,7 +103,7 @@ public class JavaAppController {
                 return Result.success(true);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return Result.success(false);
     }
@@ -115,7 +117,7 @@ public class JavaAppController {
             ATTACHED_VMS.remove(javaAppDto.getPid());
             return Result.success(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
         }
         return Result.success(false);
     }
@@ -126,7 +128,7 @@ public class JavaAppController {
             try {
                 virtualMachine.detach();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getMessage(),e);
             }
         }
     }

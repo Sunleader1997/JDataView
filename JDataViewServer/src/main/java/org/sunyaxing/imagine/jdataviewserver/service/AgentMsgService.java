@@ -154,5 +154,52 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
         public void addChild(MethodCall nextRoot) {
             this.children.add(nextRoot);
         }
+
+        @Override
+        public String toString() {
+            return buildTreeString(0, true, true);
+        }
+
+        /**
+         * 构建树形结构字符串
+         * @param level 当前层级
+         * @param isLast 当前节点是否是同级最后一个节点
+         * @param isRoot 是否是根节点
+         * @return 树形结构字符串
+         */
+        private String buildTreeString(int level, boolean isLast, boolean isRoot) {
+            StringBuilder sb = new StringBuilder();
+
+            // 构建当前节点的前缀
+            if (!isRoot) {
+                // 添加缩进
+                for (int i = 0; i < level - 1; i++) {
+                    sb.append("│   ");
+                }
+                // 添加当前级别的连接符
+                if (level > 0) {
+                    sb.append(isLast ? "└── " : "├── ");
+                }
+            }
+
+            // 添加当前节点信息
+            sb.append(className).append(" ").append(methodName).append(" ");
+            if (cost >= 0) {
+                sb.append(cost).append(" ms");
+            } else {
+                sb.append("(not finished)");
+            }
+            sb.append("\n");
+
+            // 递归处理子节点
+            for (int i = 0; i < children.size(); i++) {
+                MethodCall child = children.get(i);
+                boolean isLastChild = (i == children.size() - 1);
+                sb.append(child.buildTreeString(level + 1, isLastChild, false));
+            }
+
+            return sb.toString();
+        }
+
     }
 }

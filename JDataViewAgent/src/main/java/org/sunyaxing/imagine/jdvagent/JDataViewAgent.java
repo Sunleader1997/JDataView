@@ -78,7 +78,7 @@ public class JDataViewAgent {
         classFileTransformerOnInstall = new AgentBuilder.Default()
                 .with(AgentBuilder.InitializationStrategy.NoOp.INSTANCE)
                 .with(AgentBuilder.RedefinitionStrategy.REDEFINITION)
-                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION) // 启用 retransformation
+//                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION) // 启用 retransformation
                 .type(getElementMatcher())
                 .transform((builder, typeDescription, classLoader, module, protectionDomain) -> {
                     System.out.println("INSTALL " + typeDescription);
