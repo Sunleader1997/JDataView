@@ -61,7 +61,7 @@ public class JDataViewCli implements ApplicationRunner {
             System.setProperty("java.awt.headless", "false");
             SimpleTheme simpleTheme = SimpleTheme.makeTheme(
                     true,
-                    TextColor.ANSI.WHITE,
+                    TextColor.ANSI.YELLOW,
                     TextColor.ANSI.BLACK,
                     TextColor.ANSI.BLACK,
                     TextColor.ANSI.WHITE,
@@ -163,7 +163,7 @@ public class JDataViewCli implements ApplicationRunner {
         showLoading("LOADING APP", () -> {
             appListCache.addAll(javaAppController.getJavaApps().getData());
             appListCache.forEach(javaAppDto -> {
-                tableModel.addRow(javaAppDto.getAppName(), javaAppDto.isAlive() ? "Alive" : "Dead", javaAppDto.isHasAttached() ? "Attached" : "Detached");
+                tableModel.addRow(javaAppDto.getAppName(), javaAppDto.isAlive() ? "Alive" : "Dead", javaAppDto.isHasAttached() ? "OK" : "Detached");
             });
         });
     }

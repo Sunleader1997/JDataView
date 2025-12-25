@@ -1,6 +1,5 @@
 package org.sunyaxing.imagine.jdataviewserver.controller;
 
-import cn.hutool.core.thread.ThreadUtil;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import jakarta.annotation.PreDestroy;
@@ -14,11 +13,7 @@ import org.sunyaxing.imagine.jdataviewserver.controller.dtos.JavaAppDto;
 import org.sunyaxing.imagine.jdataviewserver.controller.dtos.ThreadDto;
 import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -62,7 +57,8 @@ public class JavaAppController {
                 aliveApps.put(appFromDb.getAppName(), appFromDb);
             }
         }
-        return Result.success(aliveApps.values().stream().toList());
+        List<JavaAppDto> result = aliveApps.values().stream().sorted(Comparator.comparing(b -> !b.isHasAttached())).toList();
+        return Result.success(result);
     }
 
     /**
@@ -117,7 +113,7 @@ public class JavaAppController {
             ATTACHED_VMS.remove(javaAppDto.getPid());
             return Result.success(true);
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         }
         return Result.success(false);
     }
@@ -128,7 +124,7 @@ public class JavaAppController {
             try {
                 virtualMachine.detach();
             } catch (Exception e) {
-                log.error(e.getMessage(),e);
+                log.error(e.getMessage(), e);
             }
         }
     }

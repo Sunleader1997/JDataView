@@ -16,6 +16,9 @@ spring:
       password: jdataview
       mode: always
       continue-on-error: true
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml

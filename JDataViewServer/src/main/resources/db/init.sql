@@ -1,4 +1,5 @@
 -- AGENT 投递的消息内容
+DROP TABLE IF EXISTS AGENT_MSG;
 create table AGENT_MSG
 (
     ID                CHARACTER VARYING NOT NULL,
