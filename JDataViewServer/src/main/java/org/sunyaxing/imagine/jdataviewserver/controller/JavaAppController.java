@@ -122,6 +122,7 @@ public class JavaAppController {
     public void destroy() {
         for (VirtualMachine virtualMachine : ATTACHED_VMS.values()) {
             try {
+                virtualMachine.loadAgent("/opt/JDataView/agent/JDataViewAgent-1.0.0.jar", "mode=uninstall");
                 virtualMachine.detach();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
