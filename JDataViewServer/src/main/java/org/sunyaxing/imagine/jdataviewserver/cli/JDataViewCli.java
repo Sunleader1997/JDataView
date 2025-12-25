@@ -56,41 +56,38 @@ public class JDataViewCli implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<String> modes = args.getOptionValues("mode");
-        if (modes != null && !modes.isEmpty() && modes.get(0).equals("cli")) {
-            System.setProperty("java.awt.headless", "false");
-            SimpleTheme simpleTheme = SimpleTheme.makeTheme(
-                    true,
-                    TextColor.ANSI.YELLOW,
-                    TextColor.ANSI.BLACK,
-                    TextColor.ANSI.BLACK,
-                    TextColor.ANSI.WHITE,
-                    TextColor.ANSI.BLACK,
-                    TextColor.ANSI.WHITE,
-                    TextColor.ANSI.BLACK
-            );
-            terminal = new DefaultTerminalFactory().createTerminal();
-            Screen screen = new TerminalScreen(terminal);
-            screen.startScreen();
-            gui = new MultiWindowTextGUI(screen);
-            gui.updateScreen();
-            gui.setTheme(simpleTheme);
-            window = new BasicWindow("JDataView CLI");
-            window.setHints(Set.of(
-                    Window.Hint.CENTERED,
-                    Window.Hint.NO_POST_RENDERING,
-                    Window.Hint.EXPANDED,
-                    Window.Hint.FULL_SCREEN
-            ));
-            appListPanel = appListPanel();
-            threadListBox = new ActionListBox();
-            stacksBox = new TextBox(new TerminalSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows()));
-            stacksBox.setReadOnly(true);
-            stackPanel = createStackPanel(threadListBox, stacksBox);
-            window.setComponent(appListPanel);
-            gui.addWindow(window);
-            gui.addWindowAndWait(window); // 阻塞等待窗口关闭
-        }
+        System.setProperty("java.awt.headless", "false");
+        SimpleTheme simpleTheme = SimpleTheme.makeTheme(
+                true,
+                TextColor.ANSI.YELLOW,
+                TextColor.ANSI.BLACK,
+                TextColor.ANSI.BLACK,
+                TextColor.ANSI.WHITE,
+                TextColor.ANSI.BLACK,
+                TextColor.ANSI.WHITE,
+                TextColor.ANSI.BLACK
+        );
+        terminal = new DefaultTerminalFactory().createTerminal();
+        Screen screen = new TerminalScreen(terminal);
+        screen.startScreen();
+        gui = new MultiWindowTextGUI(screen);
+        gui.updateScreen();
+        gui.setTheme(simpleTheme);
+        window = new BasicWindow("JDataView CLI");
+        window.setHints(Set.of(
+                Window.Hint.CENTERED,
+                Window.Hint.NO_POST_RENDERING,
+                Window.Hint.EXPANDED,
+                Window.Hint.FULL_SCREEN
+        ));
+        appListPanel = appListPanel();
+        threadListBox = new ActionListBox();
+        stacksBox = new TextBox(new TerminalSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows()));
+        stacksBox.setReadOnly(true);
+        stackPanel = createStackPanel(threadListBox, stacksBox);
+        window.setComponent(appListPanel);
+        gui.addWindow(window);
+        gui.addWindowAndWait(window); // 阻塞等待窗口关闭
     }
 
     private Panel appListPanel() {
