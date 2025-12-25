@@ -28,19 +28,19 @@ java -jar JDataViewServer-1.0.0.jar
 ```
 
 3. 运行成功后将出现面板
-   ![img](screan\1panel.png)
+   ![img](screan/1panel.png)
 4. 选择右侧refresh回车，刷新应用列表
-   ![img](screan\2panel.png)
+   ![img](screan/2panel.png)
 5. 选择应用后回车,选择 attach
-   ![img](screan\3panel.png)
+   ![img](screan/3panel.png)
 6. 输入要扫描的包前缀
-   ![img](screan\4panel.png)
+   ![img](screan/4panel.png)
 7. 回车后等待注入完成，选择应用后回车,选择 stack
-   ![img](screan\5panel.png)
+   ![img](screan/5panel.png)
 8. 触发所选择服务的业务线程后，选择右侧refresh回车，刷新线程列表
-   ![img](screan\6panel.png)
+   ![img](screan/6panel.png)
 9. 选择对应线程列表，回车后即可查看堆栈时间
-   ![img](screan\6panel.png)
+   ![img](screan/6panel.png)
 
 #### 参与贡献
 
