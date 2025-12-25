@@ -7,6 +7,7 @@ import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
 import org.sunyaxing.imagine.jdvagent.sender.base.Sender;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * 方法调用栈采集器
@@ -19,10 +20,11 @@ public class ProfilingAdvice {
      */
     @Advice.OnMethodEnter
     public static ThreadSpace enter(
-            @Advice.This Object obj,
+            @Advice.This(optional = true) Object obj,
             @Advice.Origin Method method,
             @Advice.AllArguments Object[] args) {
-        final ThreadSpace threadSpace = new ThreadSpace(obj.getClass(), method);
+        String className = Objects.isNull(obj)? "UNKNOWN" : obj.getClass().getName();
+        final ThreadSpace threadSpace = new ThreadSpace(className, method);
         threadSpace.setDepth(Counter.enter());
         Sender.INSTANCE.send(threadSpace);
         return threadSpace;
@@ -33,10 +35,9 @@ public class ProfilingAdvice {
      */
     @Advice.OnMethodExit(onThrowable = Throwable.class)
     public static void exit(
-            @Advice.This Object obj,
             @Advice.Enter ThreadSpace threadSpace,
             @Advice.Origin Method method,
-            @Advice.Return Object ret,
+            //@Advice.Return Object ret,
             @Advice.Thrown Throwable throwable,
             @Advice.AllArguments Object[] args) {
         threadSpace.end(false);

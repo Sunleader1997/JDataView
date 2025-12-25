@@ -1,8 +1,10 @@
 package org.sunyaxing.imagine.jdvagent.cache;
 
+import net.bytebuddy.dynamic.DynamicType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.util.Map;
@@ -11,16 +13,27 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OrgClassByteManager {
     private static final Map<String, OrgClassInfo> CLASS_BYTE_MAP = new ConcurrentHashMap<>();
     private static final Logger log = LoggerFactory.getLogger(OrgClassByteManager.class);
+    private static final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-    public static void put(String className, ClassLoader classLoader, byte[] bytes) {
+    public static void put(String className, ClassLoader classLoader, DynamicType.Builder<?> builder) {
         try {
             OrgClassInfo orgClassInfo = new OrgClassInfo();
             orgClassInfo.setClassName(className);
-            orgClassInfo.setBytes(bytes);
+            orgClassInfo.setBytes(builder.make().getBytes());
             orgClassInfo.setClassLoader(classLoader);
             CLASS_BYTE_MAP.put(className, orgClassInfo);
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public static void buildToTemp(DynamicType.Builder<?> builder) {
+        try {
+            builder.make().saveIn(tmpDir).forEach((key, value) -> {
+                log.info("INSTALL {} VIEW {}", key, value.getAbsolutePath());
+            });
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -43,7 +56,7 @@ public class OrgClassByteManager {
             try {
                 restore(className, instrumentation);
             } catch (Exception e) {
-                log.error(e.getMessage(),e);
+                log.error(e.getMessage(), e);
             }
         }
     }

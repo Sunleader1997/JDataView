@@ -75,14 +75,14 @@ public class JDataViewAgent {
 
     public static void install(Instrumentation instrumentation) {
         instrumentationOnInstall = instrumentation;
+
         classFileTransformerOnInstall = new AgentBuilder.Default()
                 .with(AgentBuilder.InitializationStrategy.NoOp.INSTANCE)
                 .with(AgentBuilder.RedefinitionStrategy.REDEFINITION)
 //                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION) // 启用 retransformation
                 .type(getElementMatcher())
                 .transform((builder, typeDescription, classLoader, module, protectionDomain) -> {
-                    System.out.println("INSTALL " + typeDescription);
-                    OrgClassByteManager.put(typeDescription.getName(), classLoader, builder.make().getBytes());
+                    OrgClassByteManager.put(typeDescription.getName(), classLoader, builder);
                     DynamicType.Builder<?> dynamicType = builder
                             .visit(Advice.to(ProfilingAdvice.class).on(
                                     ElementMatchers.isMethod()

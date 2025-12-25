@@ -29,12 +29,12 @@ public class ThreadSpace implements Serializable {
     // 方法调用深度
     private Long depth;
 
-    public ThreadSpace(Class<?> aClass, Method method) {
+    public ThreadSpace(String className, Method method) {
         this.threadId = Thread.currentThread().getId();
         this.threadName = Thread.currentThread().getName();
         this.stepIndex = 0L;
 
-        this.className = aClass.getName();
+        this.className = className;
         this.methodName = method.getName();
         this.methodStartTime = System.currentTimeMillis();
         this.methodState = LifeCycle.MethodState.ENTER;
