@@ -1,5 +1,6 @@
 package org.sunyaxing.imagine.jdataviewserver.controller;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import jakarta.annotation.PreDestroy;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,6 +36,7 @@ public class JavaAppController {
      */
     @GetMapping("/getJavaApps")
     public Result<List<JavaAppDto>> getJavaApps() {
+        ThreadUtil.sleep(2, TimeUnit.SECONDS);
         // 读取 JVM 列表
         List<VirtualMachineDescriptor> vms = VirtualMachine.list();
         // 所有存活APP
