@@ -11,7 +11,7 @@ JDataView 是一款专为 Linux 环境设计的 Java 应用性能分析工具，
 ### ✨ 核心特性
 
 - **无侵入式采集**：基于 Java Agent 技术，无需修改业务代码
-- **实时数据传输**：通过 WebSocket 实时传输性能数据
+- **实时数据传输**：通过 SharedMemory 实时传输性能数据
 - **可视化分析**：树形图展示方法调用栈和执行时间
 - **持久化存储**：数据持久化到数据库，支持历史数据查询
 - **包级别过滤**：支持按包前缀精准过滤需要分析的代码范围
@@ -53,12 +53,11 @@ JDataView 是一款专为 Linux 环境设计的 Java 应用性能分析工具，
 - **核心功能**：
   - 方法拦截与字节码增强
   - 调用栈数据采集（方法名、参数、返回值、耗时）
-  - WebSocket 客户端，实时发送数据到服务端
+  - SharedMemory 客户端，实时发送数据到服务端
   - 类注册与缓存管理
 - **关键类**：
   - `JDataViewAgent`：Agent 入口，处理 premain
   - `ProfilingAdvice`：方法拦截通知
-  - `JDataViewWebSocketClient`：WebSocket 客户端
 
 #### 2. [JDataViewApi](JDataViewApi)
 **数据模型模块** - 定义 Agent 与 Server 通信协议
@@ -75,7 +74,7 @@ JDataView 是一款专为 Linux 环境设计的 Java 应用性能分析工具，
 #### 3. [JDataViewServer](JDataViewServer)
 **服务端模块** - Spring Boot 应用
 
-- **技术栈**：Spring Boot、WebSocket、H2/MySQL
+- **技术栈**：Spring Boot、SharedMemory、H2/MySQL
 - **核心功能**：
   - 服务端，接收 Agent 数据
   - 数据持久化与查询
