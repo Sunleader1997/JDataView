@@ -6,7 +6,7 @@
 
 ## 📖 项目介绍
 
-JDataView 是一款专为 Linux 环境设计的 Java 应用性能分析工具，基于 Java Agent 技术实现无侵入式的方法调用栈数据采集。通过 WebSocket 实时传输数据到服务端进行持久化与分析，并在前端以树形图的方式直观展示方法调用关系和耗时信息，帮助开发者快速定位性能瓶颈。
+JDataView 是一款专为 Linux 环境设计的 Java 应用性能分析工具，基于 Java Agent 技术实现无侵入式的方法调用栈数据采集。通过 SharedMemory 实时传输数据到服务端进行持久化与分析，并在terminal以树形图的方式直观展示方法调用关系和耗时信息，帮助开发者快速定位性能瓶颈。
 
 ### ✨ 核心特性
 
@@ -225,12 +225,11 @@ JDataView/
 │   └── src/main/
 │       ├── java/.../jdataviewserver/
 │       │   ├── cli/              # CLI 命令行界面
-│       │   ├── controller/       # REST API 控制器
+│       │   ├── controller/       # 控制器（已移除 web框架）
 │       │   ├── service/          # 业务逻辑层
 │       │   ├── entity/           # 数据实体
-│       │   └── websocket/        # WebSocket 处理器
+│       │   └── websocket/        # 消费者处理器（已移除websocket）
 │       └── resources/
-│           ├── static/           # 前端静态资源
 │           └── application.yml   # 配置文件
 ├── app/                     # 测试应用
 └── assembly/                # 打包配置
