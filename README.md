@@ -33,21 +33,15 @@ JDataView 是一款专为 Linux 环境设计的 Java 应用性能分析工具，
   │     │  (方法拦截器)    │   - Byte Buddy 字节码增强
   │     │                 │   - 方法调用栈采集
   │     └────────┬────────┘   - 耗时统计
-  │Agent 注入     │ WebSocket
+  │Agent 注入     │ SharedMemoryQueue
   │              ↓
 ┌─────────────────┐
 │JDataViewServer  │ ← 服务端
 │  (Spring Boot)  │   - 数据持久化
 │  (CLI)          │   - SH可视化
-│                 │   - RESTful API
-└────────┬────────┘   - 数据分析
-         │ HTTP
-         ↓
-┌─────────────────┐
-│   前端界面       │ ← 可视化层
-│ (Quasar/Vue.js) │   - 应用管理
-│                 │   - 线程列表
-└─────────────────┘   - 调用树展示
+│                 │   - 数据分析
+└─────────────────┘   
+
 ```
 
 ### 模块说明
@@ -83,31 +77,16 @@ JDataView 是一款专为 Linux 环境设计的 Java 应用性能分析工具，
 
 - **技术栈**：Spring Boot、WebSocket、H2/MySQL
 - **核心功能**：
-  - WebSocket 服务端，接收 Agent 数据
+  - 服务端，接收 Agent 数据
   - 数据持久化与查询
   - RESTful API 提供数据服务
   - 静态资源服务（前端页面）
   - CLI 命令行交互界面
 - **关键组件**：
-  - `AgentWs`：WebSocket 处理器
+  - `AgentWs`：消费端 处理器
   - `AgentMsgService`：消息处理服务
-  - `JavaAppController`：应用管理 API
 
-#### 4. [font/dataview](font/dataview)
-**前端模块** - Quasar 框架（Vue.js）
-
-- **技术栈**：Vue.js、Quasar Framework、Vue Flow、Pnpm
-- **核心功能**：
-  - 应用列表管理
-  - 线程列表展示
-  - 方法调用树形图可视化（使用 Vue Flow）
-  - 实时数据刷新
-- **关键页面**：
-  - `AppMgmtIndex.vue`：应用管理主页
-  - `ThreadList.vue`：线程列表
-  - `JDataPanel.vue`：调用栈可视化面板
-
-#### 5. [app](app)
+#### 4. [app](app)
 **测试应用** - 用于演示和测试 Agent 功能
 
 - 提供示例业务代码
@@ -139,17 +118,6 @@ mvn clean package
 # 构建后会生成：target/JDataViewAll-1.0.0-noJdk.zip
 ```
 
-#### 3. 构建前端（可选，已内置在 Server）
-
-```bash
-cd font/dataview
-pnpm install
-pnpm run build
-
-# 构建产物会输出到：dist/spa
-# 需将构建产物复制到 JDataViewServer/src/main/resources/static/
-```
-
 ### 部署安装
 
 #### 1. 解压安装包到根目录
@@ -179,31 +147,7 @@ java -jar JDataViewServer-1.0.0.jar
 
 ### 使用指南
 
-#### 方式一：Web 界面操作
-
-1. **访问 Web 界面**
-   
-   打开浏览器访问：`http://<server-ip>:8080`
-
-2. **查看应用列表**
-   
-   - 点击「应用管理」进入应用列表页
-   - 点击「刷新」按钮查看当前运行的 Java 应用
-
-3. **Attach 到目标应用**
-   
-   - 选择目标应用，点击「Attach」
-   - 输入要监控的包前缀（如：`com.example`）
-   - 等待 Agent 注入完成
-
-4. **查看方法调用栈**
-   
-   - 选择已注入的应用，点击「查看线程」
-   - 触发业务操作（发起 HTTP 请求等）
-   - 刷新线程列表，选择目标线程
-   - 查看方法调用树形图和耗时信息
-
-#### 方式二：CLI 命令行操作
+#### CLI 命令行操作
 
 1. **启动后进入 CLI 面板**
    
@@ -288,13 +232,6 @@ JDataView/
 │       └── resources/
 │           ├── static/           # 前端静态资源
 │           └── application.yml   # 配置文件
-├── font/dataview/           # 前端模块（Vue.js）
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── appmgmt/      # 应用管理页面
-│   │   │   └── vueflow/      # 调用栈可视化
-│   │   └── router/           # 路由配置
-│   └── quasar.config.js      # Quasar 配置
 ├── app/                     # 测试应用
 └── assembly/                # 打包配置
 ```
@@ -304,15 +241,9 @@ JDataView/
 **后端**
 - Java 17+
 - Spring Boot 3.4.x
-- WebSocket
 - Byte Buddy（字节码操作）
 - Maven
 - H2 数据库
-
-**前端**
-- Vue.js 3
-- Quasar Framework
-- Pnpm
 
 
 ## 🤝 参与贡献
