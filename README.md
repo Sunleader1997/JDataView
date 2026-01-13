@@ -141,8 +141,6 @@ cd /opt/JDataView/
 java -jar JDataViewServer-1.0.0.jar
 
 # 默认会启动终端可视化界面
-# 默认端口：8080
-# 访问地址：http://localhost:8080
 ```
 
 ### 使用指南
