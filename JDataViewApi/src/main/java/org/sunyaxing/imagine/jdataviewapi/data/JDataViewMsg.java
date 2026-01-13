@@ -17,7 +17,7 @@ public class JDataViewMsg {
     private long pid;
     private MsgType msgType;
     // 业务数据
-    private List<String> content;
+    private ThreadSpace content;
 
     @Getter
     @AllArgsConstructor

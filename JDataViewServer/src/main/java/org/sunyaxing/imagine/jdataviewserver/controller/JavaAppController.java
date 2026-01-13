@@ -6,7 +6,7 @@ import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 import org.sunyaxing.imagine.jdataviewserver.common.Result;
 import org.sunyaxing.imagine.jdataviewserver.controller.dtos.GetMethodTreeDto;
 import org.sunyaxing.imagine.jdataviewserver.controller.dtos.JavaAppDto;
@@ -16,8 +16,7 @@ import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/javaApp")
+@Service
 public class JavaAppController {
 
     private static final Logger log = LoggerFactory.getLogger(JavaAppController.class);
@@ -29,10 +28,6 @@ public class JavaAppController {
      */
     private static final HashMap<Long, VirtualMachine> ATTACHED_VMS = new HashMap<>();
 
-    /**
-     * 获取APP列表
-     */
-    @GetMapping("/getJavaApps")
     public Result<List<JavaAppDto>> getJavaApps() {
         // 读取 JVM 列表
         List<VirtualMachineDescriptor> vms = VirtualMachine.list();
@@ -43,7 +38,7 @@ public class JavaAppController {
             JavaAppDto javaAppDto = JavaAppDto.builder().pid(Long.valueOf(pid)).appName(name).host("127.0.0.1").alive(true).build();
             javaAppDto.setHasAttached(ATTACHED_VMS.containsKey(javaAppDto.getPid()));
             return javaAppDto;
-        }).collect(Collectors.toMap(JavaAppDto::getAppName, app -> app));
+        }).collect(Collectors.toMap(JavaAppDto::getAppName, app -> app, (existing, replacement) -> existing));
         // 从数据库中获取APP列表
         for (JavaAppDto appFromDb : agentMsgService.generateJavaAppDto()) {
             boolean exist = aliveApps.containsKey(appFromDb.getAppName());
@@ -61,29 +56,22 @@ public class JavaAppController {
         return Result.success(result);
     }
 
-    /**
-     * 获取APP线程历史
-     */
-    @PostMapping("/getTreadList")
-    public Result<List<ThreadDto>> getTreadList(@RequestBody JavaAppDto javaAppDto) {
+    public Result<List<ThreadDto>> getTreadList(JavaAppDto javaAppDto) {
         List<ThreadDto> javaAppDtos = agentMsgService.generateThreadDto(javaAppDto);
         return Result.success(javaAppDtos);
     }
 
-    @PostMapping("/getMethodTree")
-    public Result<List<AgentMsgService.MethodCall>> getRes(@RequestBody GetMethodTreeDto getMethodTreeDto) {
+    public Result<List<AgentMsgService.MethodCall>> getRes(GetMethodTreeDto getMethodTreeDto) {
         List<AgentMsgService.MethodCall> res = agentMsgService.generateBy(getMethodTreeDto.getAppName(), getMethodTreeDto.getThreadId());
         return Result.success(res);
     }
 
-    @PostMapping("/clearAppMsg")
-    public Result<Boolean> clearAppMsg(@RequestBody JavaAppDto javaAppDto) {
+    public Result<Boolean> clearAppMsg(JavaAppDto javaAppDto) {
         agentMsgService.clearBy(javaAppDto.getAppName());
         return Result.success(true);
     }
 
-    @PostMapping("/attach")
-    public Result<Boolean> attach(@RequestBody JavaAppDto javaAppDto) {
+    public Result<Boolean> attach(JavaAppDto javaAppDto) {
         if (ATTACHED_VMS.containsKey(javaAppDto.getPid())) {
             return Result.fail("已连接");
         }
@@ -104,8 +92,7 @@ public class JavaAppController {
         return Result.success(false);
     }
 
-    @PostMapping("/detach")
-    public Result<Boolean> detach(@RequestBody JavaAppDto javaAppDto) {
+    public Result<Boolean> detach(JavaAppDto javaAppDto) {
         try {
             VirtualMachine virtualMachine = ATTACHED_VMS.get(javaAppDto.getPid());
             virtualMachine.loadAgent("/opt/JDataView/agent/JDataViewAgent-1.0.0.jar", "mode=uninstall");

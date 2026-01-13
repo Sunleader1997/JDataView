@@ -1,62 +1,50 @@
 package org.sunyaxing.imagine.jdataviewserver.websocket;
 
-import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import com.alibaba.fastjson2.JSONObject;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
-import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.websocket.WsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
 import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
+import org.sunyaxing.imagine.jmemqueue.JSharedMemQueue;
+import org.sunyaxing.imagine.jmemqueue.JSharedMemReader;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 连线数据传输实时效果
  */
 @Slf4j
-@Component
-@ServerEndpoint(value = "/agent")
 public class AgentWs {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentWs.class);
-    // 保存所有连接的会话
-    private static final ConcurrentHashMap<String, Session> SESSION_MAP = new ConcurrentHashMap<>();
+    public static final JSharedMemQueue jSharedMemQueue = new JSharedMemQueue("JDataView", 2048);
 
     public AgentMsgService agentMsgService;
 
-    public AgentWs() {
-        this.agentMsgService = SpringUtil.getBean(AgentMsgService.class);
+    public AgentWs(AgentMsgService agentMsgService) {
+        this.agentMsgService = agentMsgService;
     }
 
-    @OnOpen
-    public void onOpen(Session session) {
-        SESSION_MAP.put(session.getId(), session);
-        LOGGER.info("WebSocket 连接建立: {}", session.getId());
-        try {
-            session.getBasicRemote().sendText("连接成功！");
-        } catch (Exception e) {
-            LOGGER.error("发送消息失败：{}", e.getMessage());
-        }
-    }
-
-    @OnClose
-    public void onClose(Session session, @PathParam("app") String app) {
-        SESSION_MAP.remove(session.getId());
-        LOGGER.info("WebSocket 连接关闭: {}", session.getId());
-    }
-
-    @OnMessage
-    public void onMessage(String payload, WsSession session) {
+    public void onMessage(String payload) {
         LOGGER.info("收到消息: {}", payload);
         JDataViewMsg jDataViewMsg = JSONObject.parseObject(payload, JDataViewMsg.class);
         // 记录方法调用
-        agentMsgService.saveBatch(AgentMsgService.parseMsg(jDataViewMsg));
+        agentMsgService.save(AgentMsgService.parseMsg(jDataViewMsg));
+    }
+
+    public void run() {
+        new Thread(() -> {
+            JSharedMemReader reader = jSharedMemQueue.createReader();
+            while (true) {
+                byte[] bytes = reader.dequeue();
+                if (bytes != null) {
+                    String message = new String(bytes, StandardCharsets.UTF_8);
+                    onMessage(message);
+                } else {
+                    ThreadUtil.sleep(10);
+                }
+            }
+        }).start();
     }
 }

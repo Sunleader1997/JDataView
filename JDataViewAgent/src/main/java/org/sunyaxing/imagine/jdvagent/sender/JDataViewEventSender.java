@@ -1,15 +1,15 @@
 package org.sunyaxing.imagine.jdvagent.sender;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sunyaxing.imagine.jdataviewapi.data.JDataViewMsg;
 import org.sunyaxing.imagine.jdataviewapi.data.ThreadSpace;
 import org.sunyaxing.imagine.jdvagent.JDataViewAgent;
-import org.sunyaxing.imagine.jdvagent.sender.base.EventQueue;
-import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 import org.sunyaxing.imagine.jdvagent.sender.base.Sender;
+import org.sunyaxing.imagine.jmemqueue.JSharedMemQueue;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * 发送器
@@ -19,30 +19,29 @@ import org.sunyaxing.imagine.jdvagent.sender.base.Sender;
 public class JDataViewEventSender implements Sender {
     private static final Logger LOGGER = LoggerFactory.getLogger(JDataViewEventSender.class);
 
-    private final EventQueue eventQueue;
     public static final long PID = ProcessHandle.current().pid();
+    public final JSharedMemQueue jSharedMemQueue;
 
     public JDataViewEventSender() {
-        this.eventQueue = new EventQueue(res -> {
-            // 发送服务信息
-            JDataViewMsg appMsg = JDataViewMsg.builder()
-                    .appName(JDataViewAgent.configProperties.getAppName())
-                    .pid(PID)
-                    .msgType(JDataViewMsg.MsgType.MethodCall)
-                    .content(res)
-                    .build();
-            JDataViewWebSocketClient.getInstance().send(JSONObject.toJSONString(appMsg));
-        });
+        this.jSharedMemQueue = new JSharedMemQueue("JDataView", 2048);
+        this.jSharedMemQueue.createWriteCarriage();
     }
 
     @Override
     public void send(ThreadSpace message) {
-        String data = JSON.toJSONString(message);
-        this.eventQueue.put(data);
+        // 发送服务信息
+        JDataViewMsg appMsg = JDataViewMsg.builder()
+                .appName(JDataViewAgent.configProperties.getAppName())
+                .pid(PID)
+                .msgType(JDataViewMsg.MsgType.MethodCall)
+                .content(message)
+                .build();
+        String data = JSON.toJSONString(appMsg);
+        jSharedMemQueue.enqueue(data.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public void close() {
-        this.eventQueue.destroy();
+
     }
 }

@@ -53,6 +53,11 @@
         </dependency>
         <dependency>
             <groupId>org.sunyaxing.imagine</groupId>
+            <artifactId>JMemQueue</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sunyaxing.imagine</groupId>
             <artifactId>JDataViewApi</artifactId>
             <version>${jdataview.version}</version>
         </dependency>

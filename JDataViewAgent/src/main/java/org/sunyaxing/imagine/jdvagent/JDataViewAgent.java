@@ -12,11 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.sunyaxing.imagine.jdvagent.advices.ProfilingAdvice;
 import org.sunyaxing.imagine.jdvagent.cache.OrgClassByteManager;
 import org.sunyaxing.imagine.jdvagent.dicts.LogDicts;
-import org.sunyaxing.imagine.jdvagent.sender.base.JDataViewWebSocketClient;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +51,6 @@ public class JDataViewAgent {
         switch (configProperties.getMode()) {
             // 如果是安装模式，需要判断是否已经安装，如果已经安装，重新创建客户端即可，class不需要重载
             case "install" -> {
-                JDataViewWebSocketClient.reCreate();
                 if (!configProperties.isAttached()) {
                     install(instrumentation);
                 }
@@ -63,7 +60,6 @@ public class JDataViewAgent {
             case "uninstall" -> {
                 try {
                     instrumentationOnInstall.removeTransformer(classFileTransformerOnInstall);
-                    JDataViewWebSocketClient.INSTANCE.close();
                     OrgClassByteManager.restore(instrumentationOnInstall);
                     configProperties.setAttached(false);
                 } catch (Exception e) {
@@ -96,6 +92,7 @@ public class JDataViewAgent {
         return ElementMatchers.nameStartsWith(configProperties.getScanPack())
                 .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.sunyaxing.imagine.jdvagent")))
                 .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.sunyaxing.imagine.jdataviewapi")))
+                .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.sunyaxing.imagine.jmemqueue")))
                 .and(ElementMatchers.not(ElementMatchers.isInterface()));
     }
 }

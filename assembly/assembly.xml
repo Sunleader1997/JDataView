@@ -31,16 +31,6 @@
             <outputDirectory>/opt/JDataView</outputDirectory>
             <fileMode>777</fileMode>
         </file>
-        <file>
-            <source>${project.basedir}/JDataViewServer/src/main/resources/jdataview.service</source>
-            <outputDirectory>/usr/lib/systemd/system</outputDirectory>
-            <fileMode>777</fileMode>
-        </file>
-        <file>
-            <source>${project.basedir}/JDataViewServer/src/main/resources/startup.sh</source>
-            <outputDirectory>/opt/JDataView</outputDirectory>
-            <fileMode>777</fileMode>
-        </file>
     </files>
     <!--package the jar and figure out if contain artifact, if true there will be many dependency jars-->
     <!--<dependencySets>

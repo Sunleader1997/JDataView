@@ -57,21 +57,6 @@ public class EventQueue implements Destroyable {
         }
     }
 
-    /**
-     * [×] put(E element)：将指定元素插入队列，如果队列已满，则阻塞当前线程，直到有空间可用。
-     * [×] add(E element)：将指定元素插入队列，如果队列已满，则抛出异常。
-     * [√] offer(E element)：将指定元素插入队列，如果队列已满，则返回 false
-     */
-    public boolean put(String data) {
-        // 为了不影响程序正常执行应该选择offer
-        try{
-            blockingDeque.put(data);
-        }catch (Exception e){
-            LOGGER.error(e.getMessage(),e);
-        }
-//        return blockingDeque.put(data);
-        return true;
-    }
 
     @Override
     public void destroy() {

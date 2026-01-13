@@ -44,15 +44,13 @@ public class AgentMsgService extends ServiceImpl<AgentMsgRepository, AgentMsgEnt
         }).toList();
     }
 
-    public static List<AgentMsgEntity> parseMsg(JDataViewMsg agentMsg) {
-        return agentMsg.getContent().stream().map(strData -> {
-            ThreadSpace threadSpace = JSONObject.parseObject(strData, ThreadSpace.class);
-            AgentMsgEntity entity = EntityCover.INSTANCE.msgToEntity(threadSpace);
-            entity.setId(PREFIX + IdUtil.getSnowflakeNextIdStr());
-            entity.setAppName(agentMsg.getAppName());
-            entity.setPid(agentMsg.getPid());
-            return entity;
-        }).toList();
+    public static AgentMsgEntity parseMsg(JDataViewMsg agentMsg) {
+        ThreadSpace threadSpace = agentMsg.getContent();
+        AgentMsgEntity entity = EntityCover.INSTANCE.msgToEntity(threadSpace);
+        entity.setId(PREFIX + IdUtil.getSnowflakeNextIdStr());
+        entity.setAppName(agentMsg.getAppName());
+        entity.setPid(agentMsg.getPid());
+        return entity;
     }
 
     /**

@@ -26,6 +26,7 @@ import org.sunyaxing.imagine.jdataviewserver.controller.dtos.GetMethodTreeDto;
 import org.sunyaxing.imagine.jdataviewserver.controller.dtos.JavaAppDto;
 import org.sunyaxing.imagine.jdataviewserver.controller.dtos.ThreadDto;
 import org.sunyaxing.imagine.jdataviewserver.service.AgentMsgService;
+import org.sunyaxing.imagine.jdataviewserver.websocket.AgentWs;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -38,6 +39,8 @@ public class JDataViewCli implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(JDataViewCli.class);
     @Autowired
     private JavaAppController javaAppController;
+    @Autowired
+    private AgentMsgService agentMsgService;
 
     private MultiWindowTextGUI gui;
     private Terminal terminal;
@@ -56,6 +59,9 @@ public class JDataViewCli implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        // 启动消费者
+        AgentWs agentWs = new AgentWs(agentMsgService);
+        agentWs.run();
         System.setProperty("java.awt.headless", "false");
         SimpleTheme simpleTheme = SimpleTheme.makeTheme(
                 true,
@@ -123,7 +129,7 @@ public class JDataViewCli implements ApplicationRunner {
     private Panel createTitleBar(Runnable refreshAction) {
         Panel titleBar = new Panel();
         titleBar.setLayoutManager(new BorderLayout());
-        Button homeButton = new Button("HOME",()->{
+        Button homeButton = new Button("HOME", () -> {
             window.setComponent(appListPanel);
         });
         titleBar.addComponent(homeButton, BorderLayout.Location.LEFT);
